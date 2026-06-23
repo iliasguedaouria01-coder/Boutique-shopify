@@ -1,0 +1,344 @@
+/**
+ * Payment #1
+ */
+
+.tpt-payment-1 {
+  box-sizing: border-box;
+}
+
+.tpt-payment-1 *,
+.tpt-payment-1 *::after,
+.tpt-payment-1 *::before {
+  box-sizing: border-box;
+}
+
+.tpt-payment-1_container {
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--section-padding, 1.25em); /* 20px */
+  text-align: var(--section-alignment, left);
+}
+
+.tpt-payment-1_title {
+  font-size: var(--title-font-size, 1.25em); /* 20px */
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 var(--title-margin-bottom, 1em) 0;
+  color: var(--title-color, #000000);
+  word-wrap: break-word;
+}
+
+.tpt-payment-1_icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--icon-gap, 0.75em); /* 12px */
+  align-items: center;
+  justify-content: var(--section-alignment, flex-start);
+  margin: 0;
+  padding: 0;
+}
+
+.tpt-payment-1_icon-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tpt-payment-1_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size, 3em); /* 48px */
+  height: calc(var(--icon-size, 3em) * 0.625); /* 30px - maintain card aspect ratio */
+  background-color: var(--icon-background, #FFFFFF);
+  border-radius: var(--icon-border-radius, 0.25em); /* 4px */
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.tpt-payment-1_icon:hover {
+  transform: translateY(-0.0625em); /* 1px */
+  box-shadow: 0 0.125em 0.5em rgba(0, 0, 0, 0.1); /* 0 2px 8px */
+}
+
+.tpt-payment-1_icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.tpt-payment-1_icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Specific styling for different payment methods */
+.tpt-payment-1_icon--amex svg,
+.tpt-payment-1_icon--visa svg,
+.tpt-payment-1_icon--mastercard svg,
+.tpt-payment-1_icon--discover svg,
+.tpt-payment-1_icon--diners svg {
+  border-radius: var(--icon-border-radius, 0.25em);
+}
+
+.tpt-payment-1_icon--apple-pay svg,
+.tpt-payment-1_icon--google-pay svg,
+.tpt-payment-1_icon--paypal svg,
+.tpt-payment-1_icon--shop-pay svg {
+  padding: 0.125em; /* 2px */
+  border-radius: var(--icon-border-radius, 0.25em);
+}
+
+.tpt-payment-1_icon--custom {
+  background-color: transparent;
+}
+
+.tpt-payment-1_description {
+  font-size: var(--description-font-size, 0.875em); /* 14px */
+  font-weight: 400;
+  line-height: 1.4;
+  margin: var(--description-margin-top, 1em) 0 0 0;
+  color: var(--description-color, #666666);
+  word-wrap: break-word;
+  max-width: 60em; /* 960px */
+}
+
+/* Center alignment adjustments */
+.tpt-payment-1_container:has([style*="--section-alignment: center"]) {
+  text-align: center;
+}
+
+.tpt-payment-1_container:has([style*="--section-alignment: center"]) .tpt-payment-1_icons {
+  justify-content: center;
+}
+
+.tpt-payment-1_container:has([style*="--section-alignment: center"]) .tpt-payment-1_description {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Right alignment adjustments */
+.tpt-payment-1_container:has([style*="--section-alignment: right"]) {
+  text-align: right;
+}
+
+.tpt-payment-1_container:has([style*="--section-alignment: right"]) .tpt-payment-1_icons {
+  justify-content: flex-end;
+}
+
+.tpt-payment-1_container:has([style*="--section-alignment: right"]) .tpt-payment-1_description {
+  margin-left: auto;
+}
+
+/**
+ * Desktop large screens
+ */
+@media screen and (min-width: 80em) { /* 1280px+ */
+  .tpt-payment-1_container {
+    padding: calc(var(--section-padding, 1.25em) * 1.1);
+  }
+  
+  .tpt-payment-1_icon {
+    width: calc(var(--icon-size, 3em) * 1.05);
+    height: calc(var(--icon-size, 3em) * 0.625 * 1.05);
+  }
+}
+
+/**
+ * Tablet styles
+ */
+@media screen and (max-width: 79.9375em) and (min-width: 48em) { /* 1279px - 768px */
+  .tpt-payment-1_container {
+    padding: calc(var(--section-padding, 1.25em) * 0.9);
+  }
+  
+  .tpt-payment-1_icon {
+    width: calc(var(--icon-size, 3em) * 0.9);
+    height: calc(var(--icon-size, 3em) * 0.625 * 0.9);
+  }
+  
+  .tpt-payment-1_title {
+    font-size: calc(var(--title-font-size, 1.25em) * 0.95);
+  }
+  
+  .tpt-payment-1_description {
+    font-size: calc(var(--description-font-size, 0.875em) * 0.95);
+  }
+}
+
+/**
+ * Mobile styles
+ */
+@media screen and (max-width: 47.9375em) { /* 767px */
+  .tpt-payment-1_container {
+    padding: calc(var(--section-padding, 1.25em) * 0.8);
+  }
+  
+  .tpt-payment-1_icons {
+    gap: calc(var(--icon-gap, 0.75em) * 0.8);
+    justify-content: center; /* Center icons on mobile for better layout */
+  }
+  
+  .tpt-payment-1_icon {
+    width: calc(var(--icon-size, 3em) * 0.8);
+    height: calc(var(--icon-size, 3em) * 0.625 * 0.8);
+  }
+  
+  .tpt-payment-1_title {
+    font-size: calc(var(--title-font-size, 1.25em) * 0.9);
+    line-height: 1.25;
+    text-align: center; /* Center title on mobile */
+  }
+  
+  .tpt-payment-1_description {
+    font-size: calc(var(--description-font-size, 0.875em) * 0.9);
+    line-height: 1.35;
+    text-align: center; /* Center description on mobile */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Override alignment on mobile for better UX */
+  .tpt-payment-1_container {
+    text-align: center;
+  }
+}
+
+/**
+ * Very small mobile - stack icons if needed
+ */
+@media screen and (max-width: 29.9375em) { /* 479px */
+  .tpt-payment-1_container {
+    padding: calc(var(--section-padding, 1.25em) * 0.6);
+  }
+  
+  .tpt-payment-1_icons {
+    gap: calc(var(--icon-gap, 0.75em) * 0.6);
+    /* Allow wrapping to multiple rows if needed */
+    justify-content: center;
+  }
+  
+  .tpt-payment-1_icon {
+    width: calc(var(--icon-size, 3em) * 0.7);
+    height: calc(var(--icon-size, 3em) * 0.625 * 0.7);
+  }
+  
+  .tpt-payment-1_title {
+    font-size: calc(var(--title-font-size, 1.25em) * 0.85);
+    line-height: 1.2;
+  }
+  
+  .tpt-payment-1_description {
+    font-size: calc(var(--description-font-size, 0.875em) * 0.85);
+    line-height: 1.3;
+  }
+}
+
+/**
+ * Extra small mobile - further optimize layout
+ */
+@media screen and (max-width: 23.4375em) { /* 375px */
+  .tpt-payment-1_icons {
+    gap: calc(var(--icon-gap, 0.75em) * 0.5);
+  }
+  
+  .tpt-payment-1_icon {
+    width: calc(var(--icon-size, 3em) * 0.6);
+    height: calc(var(--icon-size, 3em) * 0.625 * 0.6);
+  }
+}
+
+/**
+ * Hover effects for interactive elements
+ */
+@media (hover: hover) and (pointer: fine) {
+  .tpt-payment-1_icon {
+    cursor: default;
+  }
+  
+  .tpt-payment-1_icon:hover {
+    background-color: color-mix(in srgb, var(--icon-background, #FFFFFF) 95%, #000000 5%);
+  }
+}
+
+/**
+ * Accessibility improvements
+ */
+@media (prefers-reduced-motion: reduce) {
+  .tpt-payment-1_icon {
+    transition: none;
+  }
+  
+  .tpt-payment-1_icon:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/**
+ * High contrast mode support
+ */
+@media (prefers-contrast: high) {
+  .tpt-payment-1_icon {
+    border: 1px solid currentColor;
+  }
+  
+  .tpt-payment-1_icon:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0.125em 0.5em rgba(0, 0, 0, 0.3);
+  }
+  
+  .tpt-payment-1_title {
+    font-weight: 700;
+  }
+}
+
+/**
+ * Print styles
+ */
+@media print {
+  .tpt-payment-1_icon {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    background-color: white !important;
+  }
+  
+  .tpt-payment-1_icon:hover {
+    background-color: white !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  
+  .tpt-payment-1_icons {
+    gap: 0.5em;
+  }
+  
+  .tpt-payment-1_container {
+    padding: 1em 0;
+  }
+}
+
+/**
+ * Focus styles for accessibility
+ */
+.tpt-payment-1_icon:focus-visible {
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+}
+
+/**
+ * Dark mode support (if theme supports it)
+ */
+@media (prefers-color-scheme: dark) {
+  .tpt-payment-1_icon {
+    background-color: var(--icon-background, #1a1a1a);
+  }
+  
+  .tpt-payment-1_icon:hover {
+    background-color: color-mix(in srgb, var(--icon-background, #1a1a1a) 90%, white 10%);
+  }
+}

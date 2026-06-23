@@ -1,0 +1,199 @@
+/**
+ * Trust Badges #1
+ */
+
+.tpt-trust-badges-1 {
+  box-sizing: border-box;
+}
+
+.tpt-trust-badges-1 *,
+.tpt-trust-badges-1 *::after,
+.tpt-trust-badges-1 *::before {
+  box-sizing: border-box;
+}
+
+.tpt-trust-badges-1_container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--badge-gap, 1.875em); /* 30px */
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tpt-trust-badges-1_item {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Column layout styles */
+.tpt-trust-badges-1--1-columns .tpt-trust-badges-1_item {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.tpt-trust-badges-1--2-columns .tpt-trust-badges-1_item {
+  flex: 0 0 calc(50% - var(--badge-gap, 1.875em) / 2);
+  max-width: calc(50% - var(--badge-gap, 1.875em) / 2);
+}
+
+.tpt-trust-badges-1--3-columns .tpt-trust-badges-1_item {
+  flex: 0 0 calc(33.333% - var(--badge-gap, 1.875em) * 2 / 3);
+  max-width: calc(33.333% - var(--badge-gap, 1.875em) * 2 / 3);
+}
+
+.tpt-trust-badges-1--4-columns .tpt-trust-badges-1_item {
+  flex: 0 0 calc(25% - var(--badge-gap, 1.875em) * 3 / 4);
+  max-width: calc(25% - var(--badge-gap, 1.875em) * 3 / 4);
+}
+
+.tpt-trust-badges-1_link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.tpt-trust-badges-1_link:hover {
+  transform: translateY(-0.125em); /* 2px */
+  opacity: 0.8;
+}
+
+.tpt-trust-badges-1_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--badge-padding, 0.9375em); /* 15px */
+  border-radius: var(--badge-border-radius, 0.5em); /* 8px */
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.tpt-trust-badges-1_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5em; /* 8px */
+  width: var(--icon-size, 2.5em); /* 40px */
+  height: var(--icon-size, 2.5em); /* 40px */
+  flex-shrink: 0;
+}
+
+.tpt-trust-badges-1_icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.tpt-trust-badges-1_label {
+  font-size: var(--font-size, 0.875em); /* 14px */
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color, #000000);
+  word-wrap: break-word;
+  hyphens: auto;
+  text-align: center;
+}
+
+/* Example section styling */
+.tpt-trust-badges-example {
+  height: 0px;
+}
+
+/**
+ * Tablet styles
+ */
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  .tpt-trust-badges-1_container {
+    gap: calc(var(--badge-gap, 1.875em) * 0.8); /* Slightly smaller gap */
+  }
+  
+  .tpt-trust-badges-1_icon {
+    width: calc(var(--icon-size, 2.5em) * 0.9); /* Slightly smaller icons */
+    height: calc(var(--icon-size, 2.5em) * 0.9);
+  }
+  
+  .tpt-trust-badges-1_label {
+    font-size: calc(var(--font-size, 0.875em) * 0.95); /* Slightly smaller font */
+  }
+
+  /* Tablet column adjustments */
+  .tpt-trust-badges-1--3-columns .tpt-trust-badges-1_item,
+  .tpt-trust-badges-1--4-columns .tpt-trust-badges-1_item {
+    flex: 0 0 calc(50% - calc(var(--badge-gap, 1.875em) * 0.8) / 2);
+    max-width: calc(50% - calc(var(--badge-gap, 1.875em) * 0.8) / 2);
+  }
+
+  .tpt-trust-badges-1--2-columns .tpt-trust-badges-1_item {
+    flex: 0 0 calc(50% - calc(var(--badge-gap, 1.875em) * 0.8) / 2);
+    max-width: calc(50% - calc(var(--badge-gap, 1.875em) * 0.8) / 2);
+  }
+}
+
+/**
+ * Mobile styles
+ */
+@media screen and (max-width: 767px) {
+  .tpt-trust-badges-1_container {
+    gap: calc(var(--badge-gap, 1.875em) * 0.6); /* Smaller gap on mobile */
+  }
+  
+  .tpt-trust-badges-1_content {
+    padding: calc(var(--badge-padding, 0.9375em) * 0.7); /* Smaller padding */
+  }
+  
+  .tpt-trust-badges-1_icon {
+    width: calc(var(--icon-size, 2.5em) * 0.7); /* Smaller icons */
+    height: calc(var(--icon-size, 2.5em) * 0.7);
+    margin-bottom: 0.25em; /* Smaller margin */
+  }
+  
+  .tpt-trust-badges-1_label {
+    font-size: calc(var(--font-size, 0.875em) * 0.8); /* Smaller font */
+    line-height: 1.2;
+  }
+
+  /* Mobile column adjustments - force to 2 columns max */
+  .tpt-trust-badges-1--2-columns .tpt-trust-badges-1_item,
+  .tpt-trust-badges-1--3-columns .tpt-trust-badges-1_item,
+  .tpt-trust-badges-1--4-columns .tpt-trust-badges-1_item {
+    flex: 0 0 calc(50% - calc(var(--badge-gap, 1.875em) * 0.6) / 2);
+    max-width: calc(50% - calc(var(--badge-gap, 1.875em) * 0.6) / 2);
+  }
+}
+
+/**
+ * Very small mobile
+ */
+@media screen and (max-width: 479px) {
+  .tpt-trust-badges-1_container {
+    gap: calc(var(--badge-gap, 1.875em) * 0.4); /* Even smaller gap */
+  }
+  
+  .tpt-trust-badges-1_content {
+    padding: calc(var(--badge-padding, 0.9375em) * 0.5); /* Even smaller padding */
+  }
+  
+  .tpt-trust-badges-1_icon {
+    width: calc(var(--icon-size, 2.5em) * 0.6); /* Even smaller icons */
+    height: calc(var(--icon-size, 2.5em) * 0.6);
+    margin-bottom: 0.1875em; /* 3px */
+  }
+  
+  .tpt-trust-badges-1_label {
+    font-size: calc(var(--font-size, 0.875em) * 0.75); /* Smaller font */
+    line-height: 1.1;
+  }
+
+  /* Very small mobile - force to 1 column for better readability */
+  .tpt-trust-badges-1--2-columns .tpt-trust-badges-1_item,
+  .tpt-trust-badges-1--3-columns .tpt-trust-badges-1_item,
+  .tpt-trust-badges-1--4-columns .tpt-trust-badges-1_item {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

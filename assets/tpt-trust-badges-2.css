@@ -1,0 +1,213 @@
+/**
+ * Trust Badges #2
+ */
+
+.tpt-trust-badges-2 {
+  box-sizing: border-box;
+}
+
+.tpt-trust-badges-2 *,
+.tpt-trust-badges-2 *::after,
+.tpt-trust-badges-2 *::before {
+  box-sizing: border-box;
+}
+
+.tpt-trust-badges-2_container {
+  width: 100%;
+  padding: 0 1em;
+  margin: 0 auto;
+}
+
+.tpt-trust-badges-2_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+.tpt-trust-badges-2_item {
+  display: flex;
+  height: 100%;
+  border-right: 1px solid var(--border-color, #E5E5E5);
+  border-bottom: 1px solid var(--border-color, #E5E5E5);
+}
+
+/* Remove right border from even items (right column) */
+.tpt-trust-badges-2_item:nth-child(even) {
+  border-right: none;
+}
+
+/* Remove bottom border from last row items */
+.tpt-trust-badges-2_item:nth-last-child(-n+2) {
+  border-bottom: none;
+}
+
+/* If odd number of items, remove bottom border from last item */
+.tpt-trust-badges-2_item:last-child:nth-child(odd) {
+  border-bottom: none;
+}
+
+.tpt-trust-badges-2_link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  width: 100%;
+}
+
+.tpt-trust-badges-2_link:hover {
+  transform: translateY(-0.125em); /* 2px */
+  opacity: 0.9;
+}
+
+.tpt-trust-badges-2_content {
+  display: flex;
+  align-items: center;
+  gap: 0.75em; /* 12px */
+  padding: var(--badge-padding, 1.25em); /* 20px */
+  transition: all 0.2s ease;
+  height: 100%;
+  width: 100%;
+}
+
+.tpt-trust-badges-2_content:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tpt-trust-badges-2_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size, 2.5em); /* 40px */
+  height: var(--icon-size, 2.5em); /* 40px */
+  flex-shrink: 0;
+}
+
+.tpt-trust-badges-2_icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.tpt-trust-badges-2_text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tpt-trust-badges-2_title {
+  font-size: var(--title-font-size, 1em); /* 16px */
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 0.25em 0;
+  color: var(--title-color, #000000);
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.tpt-trust-badges-2_subtitle {
+  font-size: var(--subtitle-font-size, 0.875em); /* 14px */
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--subtitle-color, #666666);
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Hide subtitle margin when title is empty */
+.tpt-trust-badges-2_content:not(:has(.tpt-trust-badges-2_title)) .tpt-trust-badges-2_subtitle,
+.tpt-trust-badges-2_title:empty + .tpt-trust-badges-2_subtitle {
+  margin-top: 0;
+}
+
+/**
+ * Mobile styles - stack to 1 column
+ */
+@media screen and (max-width: 47.9375em) { /* 767px */
+  .tpt-trust-badges-2_container {
+    padding: 0 0.75em;
+  }
+  
+  .tpt-trust-badges-2_grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tpt-trust-badges-2_item {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #E5E5E5);
+  }
+  
+  /* Remove bottom border from last item */
+  .tpt-trust-badges-2_item:last-child {
+    border-bottom: none;
+  }
+  
+  .tpt-trust-badges-2_content {
+    padding: calc(var(--badge-padding, 1.25em) * 0.8); /* Smaller padding */
+    gap: 0.5em; /* 8px */
+  }
+  
+  .tpt-trust-badges-2_icon {
+    width: calc(var(--icon-size, 2.5em) * 0.8); /* Smaller icons */
+    height: calc(var(--icon-size, 2.5em) * 0.8);
+  }
+  
+  .tpt-trust-badges-2_title {
+    font-size: calc(var(--title-font-size, 1em) * 0.9); /* Smaller font */
+    margin-bottom: 0.1875em; /* 3px */
+  }
+  
+  .tpt-trust-badges-2_subtitle {
+    font-size: calc(var(--subtitle-font-size, 0.875em) * 0.85); /* Smaller font */
+    line-height: 1.2;
+  }
+}
+
+/**
+ * Very small mobile
+ */
+@media screen and (max-width: 29.9375em) { /* 479px */
+  .tpt-trust-badges-2_container {
+    padding: 0 0.5em;
+  }
+  
+  .tpt-trust-badges-2_content {
+    padding: calc(var(--badge-padding, 1.25em) * 0.6); /* Even smaller padding */
+    gap: 0.375em; /* 6px */
+  }
+  
+  .tpt-trust-badges-2_icon {
+    width: calc(var(--icon-size, 2.5em) * 0.7); /* Even smaller icons */
+    height: calc(var(--icon-size, 2.5em) * 0.7);
+  }
+  
+  .tpt-trust-badges-2_title {
+    font-size: calc(var(--title-font-size, 1em) * 0.85); /* Smaller font */
+    margin-bottom: 0.125em; /* 2px */
+  }
+  
+  .tpt-trust-badges-2_subtitle {
+    font-size: calc(var(--subtitle-font-size, 0.875em) * 0.8); /* Smaller font */
+    line-height: 1.1;
+  }
+}
+
+/**
+ * Fallback for browsers that don't support CSS Grid
+ */
+@supports not (display: grid) {
+  .tpt-trust-badges-2_grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .tpt-trust-badges-2_item {
+    width: 50%;
+  }
+  
+  @media screen and (max-width: 47.9375em) {
+    .tpt-trust-badges-2_item {
+      width: 100%;
+    }
+  }
+}

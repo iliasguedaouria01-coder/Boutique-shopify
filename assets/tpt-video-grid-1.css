@@ -1,0 +1,94 @@
+.tpt-video-one .tpt-video-inner {
+	position: relative;
+}
+
+.tpt-video-one .tpt-video-inner .tpt-video-content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	overflow: hidden;
+	border-radius: 8px;
+}
+
+.tpt-video-one .tpt-play-button .svg-play,
+.tpt-video-one .tpt-play-button .svg-pause {
+	line-height: 0;
+}
+
+.tpt-video-one .tpt-play-button .svg-play {
+	display: block;
+}
+
+.tpt-video-one .tpt-play-button .svg-pause {
+	display: none;
+}
+
+.tpt-video-one .tpt-play-button.active .svg-play {
+	display: none;
+}
+
+.tpt-video-one .tpt-play-button.active .svg-pause {
+	display: block;
+}
+
+.tpt-video-one tpt-video-item > svg,
+.tpt-video-one .tpt-video-inner .tpt-video-content video {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	object-fit: cover;
+	object-position: center;
+}
+
+.tpt-video-one .tpt-video-preview + .tpt-video-main {
+	opacity: 0;
+	visibility: visible;
+}
+
+.tpt-video-one tpt-video-item.loaded .tpt-video-main,
+.tpt-video-one .tpt-video-main.active {
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+
+.tpt-video-one .tpt-play-button {
+	display: flex;
+	position: absolute;
+	cursor: pointer;
+	width: 3.8rem;
+	right: 2rem;
+	height: 3.8rem;
+	top: 2rem;
+	background: #fff;
+	z-index: 1;
+	border-radius: 50%;
+	align-items: center;
+	justify-content: center;
+}
+
+.tpt-video-one .tpt-video-info {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 2rem;
+	color: var(--text-video-color);
+	z-index: 2;
+}
+
+.tpt-video-one .tpt-video__heading,
+.tpt-video-one .tpt-video-info a {
+	color: var(--text-video-color);
+}
+
+.tpt-video-one .tpt-video__heading {
+	margin: 0;
+}
+
+.tpt-video-one .tpt-video__description {
+	opacity: 0.8;
+}
