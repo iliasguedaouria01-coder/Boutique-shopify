@@ -1,0 +1,324 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-feature-list-root {
+    --afl-bg: {{ s.section_bg }};
+    --afl-heading: {{ s.heading_color }};
+    --afl-text: {{ s.text_color }};
+    --afl-icon: {{ s.icon_color }};
+    --afl-item-bg: {{ s.item_circle_bg }};
+    --afl-circle-size: {{ s.icon_circle_size }}px;
+    --afl-icon-size: {{ s.icon_size }}px;
+    --afl-gap: {{ s.item_gap }}px;
+    background: var(--afl-bg);
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-feature-list-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 3vw, 32px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__heading {
+    margin: 0 0 clamp(22px, 3.2vw, 34px);
+    text-align: center;
+    color: var(--afl-heading);
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__grid {
+    display: grid;
+    gap: var(--afl-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .amose-afl__grid[data-mobile-layout="slider"] {
+      margin-right: calc(clamp(16px, 3vw, 32px) * -1);
+      padding-right: 0;
+    }
+
+    #shopify-section-{{ section.id }} .amose-afl__grid[data-mobile-layout="slider"] {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(200px, 75%);
+      grid-template-columns: none;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-snap-type: x mandatory;
+    }
+
+    #shopify-section-{{ section.id }} .amose-afl__grid[data-mobile-layout="slider"]::-webkit-scrollbar {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .amose-afl__grid[data-mobile-layout="slider"] .amose-afl__item {
+      scroll-snap-align: start;
+    }
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .amose-afl__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__item {
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__icon-circle {
+    width: var(--afl-circle-size);
+    height: var(--afl-circle-size);
+    border-radius: 999px;
+    background: var(--afl-item-bg);
+    margin: 0 auto 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__icon {
+    color: var(--afl-icon);
+    font-size: var(--afl-icon-size);
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__title {
+    margin: 0;
+    color: var(--afl-heading);
+    font-size: clamp(14px, 1vw, 17px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+
+  #shopify-section-{{ section.id }} .amose-afl__desc {
+    margin: 6px auto 0;
+    max-width: 24ch;
+    color: var(--afl-text);
+    font-size: clamp(11px, 0.72vw, 12px);
+    line-height: 1.35;
+    font-weight: 400;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<section class="amose-afl__wrap">
+  {% if s.show_heading and s.heading != blank %}
+    <h2 class="amose-afl__heading">{{ s.heading | escape }}</h2>
+  {% endif %}
+  <div class="amose-afl__grid" data-mobile-layout="{{ s.mobile_layout }}">
+    {% for block in section.blocks %}
+      <article class="amose-afl__item" {{ block.shopify_attributes }}>
+        <div class="amose-afl__icon-circle">
+          {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+            <i class="ph ph-{{ block.settings.icon }} amose-afl__icon" aria-hidden="true"></i>
+          {% endif %}
+        </div>
+        {% if block.settings.title != blank %}
+          <h3 class="amose-afl__title">{{ block.settings.title | escape }}</h3>
+        {% endif %}
+        {% if block.settings.text != blank %}
+          <p class="amose-afl__desc">{{ block.settings.text | escape }}</p>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "feature-list"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Feature list",
+  "tag": "section",
+  "class": "amose-feature-list-root",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "checkbox", "id": "show_heading", "label": "Show heading", "default": false },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Feature list" },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "slider", "label": "Slider" }
+      ],
+      "default": "grid"
+    },
+    { "type": "range", "id": "max_width", "min": 960, "max": 1800, "step": 20, "unit": "px", "label": "Max width", "default": 1400 },
+    { "type": "color", "id": "section_bg", "label": "Section background", "default": "#f3f4f6" },
+    { "type": "color", "id": "heading_color", "label": "Heading and title color", "default": "#2f2f2f" },
+    { "type": "color", "id": "text_color", "label": "Description color", "default": "#6b7280" },
+    { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#111827" },
+    { "type": "color", "id": "item_circle_bg", "label": "Icon circle background", "default": "#bfe4c1" },
+    { "type": "range", "id": "icon_circle_size", "min": 40, "max": 100, "step": 1, "unit": "px", "label": "Icon circle size", "default": 55 },
+    { "type": "range", "id": "icon_size", "min": 20, "max": 86, "step": 1, "unit": "px", "label": "Icon size", "default": 25 },
+    { "type": "range", "id": "item_gap", "min": 8, "max": 48, "step": 1, "unit": "px", "label": "Item gap", "default": 22 },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 32 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 32 }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "drop-simple", "label": "DropSimple" },
+            { "value": "eyedropper-sample", "label": "EyedropperSample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "HandHeart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "StarFour" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "CheckCircle" },
+            { "value": "drop-slash", "label": "DropSlash" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "hands-clapping", "label": "HandsClapping" },
+            { "value": "magic-wand", "label": "MagicWand" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "push-pin", "label": "PushPin" },
+            { "value": "rocket-launch", "label": "RocketLaunch" },
+            { "value": "scan-smiley", "label": "ScanSmiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "seal-check", "label": "SealCheck" },
+            { "value": "shield-check", "label": "ShieldCheck" },
+            { "value": "shooting-star", "label": "ShootingStar" },
+            { "value": "smiley-sticker", "label": "SmileySticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "x-circle", "label": "XCircle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "SprayBottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "shirt-folded", "label": "ShirtFolded" },
+            { "value": "security-camera", "label": "SecurityCamera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "PlusCircle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "PawPrint" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "PaintBrush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "none", "label": "None" }
+          ],
+          "default": "plant"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Vegan" },
+        { "type": "text", "id": "text", "label": "Description", "default": "Our entire menu is completely vegan" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature list",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "plant",
+            "title": "Vegan",
+            "text": "Our entire menu is completely vegan"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "users",
+            "title": "All-Natural",
+            "text": "All ingredients are 100% natural"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "tree",
+            "title": "Made in Canada",
+            "text": "All items are proudly made in Canada"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "icon": "hand-heart",
+            "title": "Sustainable",
+            "text": "Made with conscious materials"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,421 @@
+{%- liquid
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }}.amose-benefits-banner-root {
+    --amose-bb-bg: {{ section.settings.section_bg }};
+    --amose-bb-card: {{ section.settings.card_bg }};
+    --amose-bb-heading: {{ section.settings.heading_color }};
+    --amose-bb-sub: {{ section.settings.subtext_color }};
+    --amose-bb-item: {{ section.settings.item_text_color }};
+    --amose-bb-icon: {{ section.settings.icon_bg }};
+    --amose-bb-radius: {{ section.settings.corner_radius }}px;
+    --amose-heading: clamp(22px, 2.5vw, 30px);
+    --amose-body: clamp(14px, 1.2vw, 16px);
+    --amose-lh-heading: 1.15;
+    --amose-lh-body: 1.55;
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-benefits-banner-root {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__inner {
+    background: var(--amose-bb-bg);
+    color: var(--amose-bb-heading);
+    border-radius: var(--amose-bb-radius);
+    padding: clamp(28px, 5vw, 56px) clamp(24px, 4vw, 48px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(24px, 4vw, 40px);
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-benefits-banner {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-benefits-banner__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      padding: clamp(24px, 3.8vw, 36px) clamp(20px, 3.2vw, 30px);
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    #shopify-section-{{ section.id }} .amose-benefits-banner__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: clamp(32px, 5vw, 64px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__copy h2 {
+    margin: 0 0 16px;
+    font-size: var(--amose-heading);
+    font-weight: 700;
+    line-height: var(--amose-lh-heading);
+    color: var(--amose-bb-heading);
+    letter-spacing: -0.02em;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__copy {
+    max-width: 560px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__copy .rte,
+  #shopify-section-{{ section.id }} .amose-benefits-banner__copy .rte p {
+    margin: 0;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    color: var(--amose-bb-sub);
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__copy .rte p + p {
+    margin-top: 0.7em;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__card {
+    background: var(--amose-bb-card);
+    border-radius: calc(var(--amose-bb-radius) * 0.65);
+    padding: clamp(20px, 3vw, 32px) clamp(18px, 3vw, 36px);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__list {
+    columns: 2;
+    column-gap: clamp(16px, 3vw, 32px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media screen and (max-width: 549px) {
+    #shopify-section-{{ section.id }} .amose-benefits-banner__list {
+      columns: 1;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 14px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__item:last-child {
+    margin-bottom: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--amose-bb-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__icon svg {
+    width: 14px;
+    height: 14px;
+    color: #ffffff;
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__text {
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    color: var(--amose-bb-item);
+  }
+
+  #shopify-section-{{ section.id }} .amose-benefits-banner__icon .ph {
+    font-size: 14px;
+    line-height: 1;
+    color: #ffffff;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<div class="amose-benefits-banner">
+  <div class="amose-benefits-banner__inner">
+      <div class="amose-benefits-banner__copy">
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+        {% if section.settings.subtext != blank %}
+          <div class="rte">{{ section.settings.subtext }}</div>
+        {% endif %}
+      </div>
+
+      <div class="amose-benefits-banner__card">
+        <ul class="amose-benefits-banner__list">
+          {% for block in section.blocks %}
+            <li class="amose-benefits-banner__item" {{ block.shopify_attributes }}>
+              <span class="amose-benefits-banner__icon" aria-hidden="true">
+                {% if block.settings.phosphor_icon != blank and block.settings.phosphor_icon != 'none' %}
+                  <i class="ph ph-{{ block.settings.phosphor_icon | default: 'x-circle' }}" aria-hidden="true"></i>
+                {% endif %}
+              </span>
+              <span class="amose-benefits-banner__text">{{ block.settings.line_text | escape }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+</div>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "benefits-banner"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Benefits section",
+  "tag": "section",
+  "class": "amose-benefits-banner-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#1e4d3a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#f4f1e8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "subtext_color",
+      "label": "Subtext color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "item_text_color",
+      "label": "List text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon circle color",
+      "default": "#1e4d3a"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Designed Without Compromise"
+    },
+    {
+      "type": "richtext",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "<p>Our formula focuses on what truly supports gut health—without unnecessary additives or fillers.</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "excluded",
+      "name": "Excluded item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "line_text",
+          "label": "Text",
+          "default": "Artificial fillers"
+        },
+        {
+          "type": "select",
+          "id": "phosphor_icon",
+          "label": "Phosphor icon",
+          "options": [
+            { "value": "drop-simple", "label": "DropSimple" },
+            { "value": "eyedropper-sample", "label": "EyedropperSample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "HandHeart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "StarFour" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "CheckCircle" },
+            { "value": "drop-slash", "label": "DropSlash" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "hands-clapping", "label": "HandsClapping" },
+            { "value": "magic-wand", "label": "MagicWand" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "push-pin", "label": "PushPin" },
+            { "value": "rocket-launch", "label": "RocketLaunch" },
+            { "value": "scan-smiley", "label": "ScanSmiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "seal-check", "label": "SealCheck" },
+            { "value": "shield-check", "label": "ShieldCheck" },
+            { "value": "shooting-star", "label": "ShootingStar" },
+            { "value": "smiley-sticker", "label": "SmileySticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "x-circle", "label": "XCircle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "SprayBottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "shirt-folded", "label": "ShirtFolded" },
+            { "value": "security-camera", "label": "SecurityCamera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "PlusCircle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "PawPrint" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "PaintBrush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "none", "label": "None" }
+          ],
+          "default": "x-circle"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Benefits section",
+      "blocks": [
+        { "type": "excluded", "settings": { "line_text": "Artificial fillers", "phosphor_icon": "x-circle" } },
+        { "type": "excluded", "settings": { "line_text": "Added sugars", "phosphor_icon": "drop-slash" } },
+        { "type": "excluded", "settings": { "line_text": "Artificial flavors", "phosphor_icon": "smiley-sticker" } },
+        { "type": "excluded", "settings": { "line_text": "Low-quality probiotic strains", "phosphor_icon": "virus" } },
+        { "type": "excluded", "settings": { "line_text": "Synthetic preservatives", "phosphor_icon": "shield-check" } },
+        { "type": "excluded", "settings": { "line_text": "Artificial colors", "phosphor_icon": "paint-brush" } },
+        { "type": "excluded", "settings": { "line_text": "Harsh chemical binders", "phosphor_icon": "syringe" } },
+        { "type": "excluded", "settings": { "line_text": "One-size-fits-all formulas", "phosphor_icon": "ranking" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

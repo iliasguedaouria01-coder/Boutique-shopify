@@ -1,0 +1,1054 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign ba_slider_start = s.slider_initial | default: 50
+  assign img_before = s.image_before
+  if img_before == blank
+    assign img_before = s.image
+  endif
+  assign img_after = s.image_after
+  assign show_compare = false
+  if img_before != blank and img_after != blank
+    assign show_compare = true
+  endif
+  assign lc = 0
+  assign rc = 0
+  for block in section.blocks
+    if block.type == 'point'
+      if block.settings.side == 'left'
+        assign lc = lc | plus: 1
+      elsif block.settings.side == 'right'
+        assign rc = rc | plus: 1
+      endif
+    endif
+  endfor
+  assign row_count = lc
+  if rc > row_count
+    assign row_count = rc
+  endif
+  if row_count < 1
+    assign row_count = 1
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }}.amose-ba2-root {
+    --amose-ba2-title: clamp(22px, 2.5vw, 34px);
+    --amose-ba2-title-lh: 1.15;
+    --amose-ba2-point-title: clamp(16px, 1.35vw, 18px);
+    --amose-ba2-body: clamp(13px, 1.1vw, 15px);
+    --amose-ba2-bg: {{ s.section_bg }};
+    --amose-ba2-text: {{ s.text_color }};
+    --amose-ba2-muted: {{ s.muted_text_color }};
+    --amose-ba2-highlight: {{ s.heading_highlight_color }};
+    --amose-ba2-icon-bg: {{ s.icon_bg }};
+    --amose-ba2-icon-fg: {{ s.icon_color }};
+    --amose-ba2-handle: {{ s.handle_color | default: '#171717' }};
+    --amose-ba2-slider-bar: {{ s.slider_bar_color | default: '#ffffff' }};
+    --amose-ba2-badge-bg: {{ s.badge_bg | default: '#ffffff' }};
+    --amose-ba2-badge-text: {{ s.badge_text_color | default: '#171717' }};
+    --amose-ba2-badge-radius: {{ s.badge_radius | default: 6 }}px;
+    --amose-ba2-pos: {{ ba_slider_start }}%;
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    background: var(--amose-ba2-bg);
+    color: var(--amose-ba2-text);
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-ba2-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__intro {
+    margin-bottom: clamp(28px, 4vw, 48px);
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__heading {
+    margin: 0;
+    font-size: var(--amose-ba2-title);
+    font-weight: 700;
+    line-height: var(--amose-ba2-title-lh);
+    letter-spacing: -0.02em;
+    color: var(--amose-ba2-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__heading-highlight {
+    color: var(--amose-ba2-highlight);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__subtitle {
+    margin: clamp(10px, 1.5vw, 16px) auto 0;
+    max-width: 672px;
+    font-size: clamp(15px, 1.15vw, 17px);
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--amose-ba2-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(200px, {{ s.image_column_max }}px) minmax(0, 1fr);
+    grid-template-rows: repeat({{ row_count }}, auto);
+    align-items: center;
+    column-gap: clamp(32px, 4.5vw, 72px);
+    row-gap: clamp(20px, 3vw, 40px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__media {
+    grid-column: 2;
+    grid-row: 1 / span {{ row_count }};
+    width: 100%;
+    max-width: {{ s.image_column_max }}px;
+    margin: 0 auto;
+    justify-self: center;
+    align-self: center;
+    border-radius: 50%;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__compare {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__compare-single {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__compare-single img,
+  #shopify-section-{{ section.id }} .amose-ba2__compare-single .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__compare-after {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__before-clip {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--amose-ba2-pos, 50%)) 0 0);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__before-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--amose-ba2-pos, 50%);
+    width: 44px;
+    margin-left: -22px;
+    z-index: 2;
+    cursor: ew-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--amose-ba2-handle);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__handle:focus-visible {
+    outline: 2px solid var(--amose-ba2-text);
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__handle-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 3px;
+    transform: translateX(-50%);
+    background: var(--amose-ba2-slider-bar);
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__handle-knob {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--amose-ba2-handle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__handle-icon {
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    color: var(--amose-ba2-handle);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__ba-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__ba-label {
+    position: absolute;
+    bottom: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: var(--amose-ba2-badge-radius);
+    background: var(--amose-ba2-badge-bg);
+    color: var(--amose-ba2-badge-text);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__ba-label--before {
+    left: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__ba-label--after {
+    right: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    max-width: 280px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point--left {
+    grid-column: 1;
+    justify-self: end;
+    align-items: flex-end;
+    text-align: right;
+    padding-right: clamp(8px, 1.5vw, 16px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point--right {
+    grid-column: 3;
+    justify-self: start;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: clamp(8px, 1.5vw, 16px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point-icon {
+    flex-shrink: 0;
+    width: {{ s.icon_size }}px;
+    height: {{ s.icon_size }}px;
+    border-radius: 50%;
+    background: var(--amose-ba2-point-icon-bg, var(--amose-ba2-icon-bg));
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point-icon .amose-ba2__phosphor-icon {
+    font-size: 140%;
+    line-height: 1;
+    display: inline-block;
+    color: var(--amose-ba2-icon-fg);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point-title {
+    margin: 0;
+    font-size: var(--amose-ba2-point-title);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--amose-ba2-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point-body,
+  #shopify-section-{{ section.id }} .amose-ba2__point-body p {
+    margin: 0;
+    font-size: var(--amose-ba2-body);
+    line-height: 1.5;
+    color: var(--amose-ba2-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-ba2__point-body p + p {
+    margin-top: 0.5em;
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .amose-ba2__grid {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: clamp(20px, 5vw, 28px) clamp(10px, 3vw, 14px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__media {
+      order: 1;
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: min(72vw, 280px);
+      margin: 0 auto clamp(4px, 1.5vw, 12px);
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point {
+      order: 2;
+      flex: 0 0 calc(50% - 7px);
+      max-width: calc(50% - 7px);
+      box-sizing: border-box;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point--left,
+    #shopify-section-{{ section.id }} .amose-ba2__point--right {
+      justify-self: stretch;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point-title {
+      font-size: clamp(14px, 3.8vw, 16px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point-body {
+      font-size: clamp(12px, 3.2vw, 14px);
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-ba2__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(200px, {{ s.image_column_max }}px) minmax(0, 1fr);
+      grid-template-rows: repeat({{ row_count }}, auto);
+      column-gap: clamp(24px, 3.5vw, 48px);
+      row-gap: clamp(20px, 3vw, 40px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point--left {
+      order: initial;
+      grid-column: 1;
+      justify-self: end;
+      align-items: flex-end;
+      text-align: right;
+      padding-right: clamp(6px, 1.2vw, 12px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__point--right {
+      order: initial;
+      grid-column: 3;
+      justify-self: start;
+      align-items: flex-start;
+      text-align: left;
+      padding-left: clamp(6px, 1.2vw, 12px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-ba2__media {
+      order: initial;
+      grid-column: 2;
+      grid-row: 1 / span {{ row_count }};
+    }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<div class="amose-ba2__wrap">
+  {% if s.heading != blank or s.heading_highlight != blank or s.subtitle != blank %}
+    <div class="amose-ba2__intro">
+      {% if s.heading != blank or s.heading_highlight != blank %}
+        <h2 class="amose-ba2__heading">
+          {% if s.heading != blank %}{{ s.heading | escape }}{% endif %}
+          {% if s.heading_highlight != blank %}
+            <span class="amose-ba2__heading-highlight">{{ s.heading_highlight | escape }}</span>
+          {% endif %}
+        </h2>
+      {% endif %}
+      {% if s.subtitle != blank %}
+        <div class="amose-ba2__subtitle rte">{{ s.subtitle | escape | newline_to_br }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="amose-ba2__grid">
+    {%- assign left_i = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'point' and block.settings.side == 'left' -%}
+        {%- assign left_i = left_i | plus: 1 -%}
+        <div
+          class="amose-ba2__point amose-ba2__point--left"
+          style="grid-row: {{ left_i }};{% if block.settings.icon_circle_bg != blank %} --amose-ba2-point-icon-bg: {{ block.settings.icon_circle_bg }};{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="amose-ba2__point-icon">
+            {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+              <i class="ph ph-{{ block.settings.icon }} amose-ba2__phosphor-icon" aria-hidden="true"></i>
+            {% endif %}
+          </div>
+          {% if block.settings.title != blank %}
+            <h3 class="amose-ba2__point-title">{{ block.settings.title | escape }}</h3>
+          {% endif %}
+          {% if block.settings.text != blank %}
+            <div class="amose-ba2__point-body rte">{{ block.settings.text }}</div>
+          {% endif %}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <div class="amose-ba2__media">
+      {% if show_compare %}
+        <div
+          class="amose-ba2__compare"
+          data-amose-ba2-compare
+          data-section-id="{{ section.id }}"
+          data-initial="{{ ba_slider_start }}"
+        >
+          <img
+            class="amose-ba2__compare-after"
+            src="{{ img_after | image_url: width: 1400 }}"
+            alt="{{ img_after.alt | default: s.after_label | default: 'After' | escape }}"
+            width="{{ img_after.width }}"
+            height="{{ img_after.height }}"
+            loading="lazy"
+          >
+          <div class="amose-ba2__before-clip">
+            <img
+              class="amose-ba2__before-img"
+              src="{{ img_before | image_url: width: 1400 }}"
+              alt="{{ img_before.alt | default: s.before_label | default: 'Before' | escape }}"
+              width="{{ img_before.width }}"
+              height="{{ img_before.height }}"
+              loading="lazy"
+            >
+          </div>
+          {% if s.before_label != blank or s.after_label != blank %}
+            <div class="amose-ba2__ba-labels" aria-hidden="true">
+              {% if s.before_label != blank %}
+                <span class="amose-ba2__ba-label amose-ba2__ba-label--before">{{ s.before_label | escape }}</span>
+              {% endif %}
+              {% if s.after_label != blank %}
+                <span class="amose-ba2__ba-label amose-ba2__ba-label--after">{{ s.after_label | escape }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+          <button
+            type="button"
+            class="amose-ba2__handle"
+            aria-label="Drag to compare before and after"
+            data-amose-ba2-handle
+          >
+            <span class="amose-ba2__handle-line" aria-hidden="true"></span>
+            <span class="amose-ba2__handle-knob" aria-hidden="true">
+              <i class="ph ph-arrows-out-line-horizontal amose-ba2__handle-icon" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+      {% elsif img_before != blank %}
+        <div class="amose-ba2__compare-single">
+          <img
+            src="{{ img_before | image_url: width: 1400 }}"
+            alt="{{ img_before.alt | default: s.heading | escape }}"
+            width="{{ img_before.width }}"
+            height="{{ img_before.height }}"
+            loading="lazy"
+          >
+        </div>
+      {% elsif img_after != blank %}
+        <div class="amose-ba2__compare-single">
+          <img
+            src="{{ img_after | image_url: width: 1400 }}"
+            alt="{{ img_after.alt | default: s.heading | escape }}"
+            width="{{ img_after.width }}"
+            height="{{ img_after.height }}"
+            loading="lazy"
+          >
+        </div>
+      {% else %}
+        <div class="amose-ba2__compare-single">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- assign right_i = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'point' and block.settings.side == 'right' -%}
+        {%- assign right_i = right_i | plus: 1 -%}
+        <div
+          class="amose-ba2__point amose-ba2__point--right"
+          style="grid-row: {{ right_i }};{% if block.settings.icon_circle_bg != blank %} --amose-ba2-point-icon-bg: {{ block.settings.icon_circle_bg }};{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="amose-ba2__point-icon">
+            {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+              <i class="ph ph-{{ block.settings.icon }} amose-ba2__phosphor-icon" aria-hidden="true"></i>
+            {% endif %}
+          </div>
+          {% if block.settings.title != blank %}
+            <h3 class="amose-ba2__point-title">{{ block.settings.title | escape }}</h3>
+          {% endif %}
+          {% if block.settings.text != blank %}
+            <div class="amose-ba2__point-body rte">{{ block.settings.text }}</div>
+          {% endif %}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% if show_compare %}
+  <script>
+    (function () {
+      var sectionId = {{ section.id | json }};
+      var sel = '#shopify-section-' + sectionId + ' [data-amose-ba2-compare]';
+
+      function clamp(n, min, max) {
+        return Math.min(max, Math.max(min, n));
+      }
+
+      function readPct(str) {
+        var n = parseFloat(String(str || '').replace('%', ''));
+        return isNaN(n) ? 50 : n;
+      }
+
+      function setPos(root, pct) {
+        pct = clamp(pct, 0, 100);
+        root.style.setProperty('--amose-ba2-pos', pct + '%');
+        var btn = root.querySelector('[data-amose-ba2-handle]');
+        if (btn) btn.setAttribute('aria-valuenow', String(Math.round(pct)));
+      }
+
+      function initCompare(root) {
+        if (!root || root.getAttribute('data-amose-ba2-ready')) return;
+        root.setAttribute('data-amose-ba2-ready', '1');
+        var handle = root.querySelector('[data-amose-ba2-handle]');
+        if (handle) {
+          handle.setAttribute('role', 'slider');
+          handle.setAttribute('aria-valuemin', '0');
+          handle.setAttribute('aria-valuemax', '100');
+          var ini = readPct(root.getAttribute('data-initial'));
+          setPos(root, ini);
+        }
+
+        function pctFromClientX(clientX) {
+          var r = root.getBoundingClientRect();
+          if (r.width <= 0) return 50;
+          return ((clientX - r.left) / r.width) * 100;
+        }
+
+        var dragging = false;
+
+        function onPointerMove(e) {
+          if (!dragging) return;
+          e.preventDefault();
+          setPos(root, pctFromClientX(e.clientX));
+        }
+
+        function onPointerUp() {
+          dragging = false;
+          document.removeEventListener('pointermove', onPointerMove);
+          document.removeEventListener('pointerup', onPointerUp);
+          document.removeEventListener('pointercancel', onPointerUp);
+        }
+
+        root.addEventListener('pointerdown', function (e) {
+          if (e.target.closest('[data-amose-ba2-handle]')) return;
+          dragging = true;
+          root.setPointerCapture(e.pointerId);
+          setPos(root, pctFromClientX(e.clientX));
+          document.addEventListener('pointermove', onPointerMove, { passive: false });
+          document.addEventListener('pointerup', onPointerUp);
+          document.addEventListener('pointercancel', onPointerUp);
+        });
+
+        if (handle) {
+          handle.addEventListener('pointerdown', function (e) {
+            e.stopPropagation();
+            dragging = true;
+            handle.setPointerCapture(e.pointerId);
+            document.addEventListener('pointermove', onPointerMove, { passive: false });
+            document.addEventListener('pointerup', onPointerUp);
+            document.addEventListener('pointercancel', onPointerUp);
+          });
+
+          handle.addEventListener('keydown', function (e) {
+            var cur = readPct(getComputedStyle(root).getPropertyValue('--amose-ba2-pos'));
+            var step = e.shiftKey ? 10 : 3;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              setPos(root, cur - step);
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+              e.preventDefault();
+              setPos(root, cur + step);
+            } else if (e.key === 'Home') {
+              e.preventDefault();
+              setPos(root, 0);
+            } else if (e.key === 'End') {
+              e.preventDefault();
+              setPos(root, 100);
+            }
+          });
+        }
+      }
+
+      function run() {
+        var el = document.querySelector(sel);
+        if (el) initCompare(el);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+      } else {
+        run();
+      }
+
+      document.addEventListener('shopify:section:load', function (e) {
+        if (e.detail && String(e.detail.sectionId) === String(sectionId)) {
+          var el = document.querySelector(sel);
+          if (el) {
+            el.removeAttribute('data-amose-ba2-ready');
+            initCompare(el);
+          }
+        }
+      });
+    })();
+  </script>
+{% endif %}
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "before-after-2"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Before and after 2",
+  "tag": "section",
+  "class": "amose-ba2-root",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "image_column_max",
+      "min": 280,
+      "max": 560,
+      "step": 10,
+      "unit": "px",
+      "label": "Circle max width",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 40,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon circle size",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "slider_initial",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Slider start position",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+        "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Headings",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Body text",
+      "default": "#5c5c5c"
+    },
+    {
+      "type": "color",
+      "id": "heading_highlight_color",
+      "label": "Heading highlight",
+      "default": "#e85d04"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon circle background",
+      "default": "#e8f5e9"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#2e7d32"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Slider handle",
+      "default": "#171717"
+    },
+    {
+      "type": "color",
+      "id": "slider_bar_color",
+      "label": "Slider divider",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Before/after label background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Before/after label text",
+      "default": "#171717"
+    },
+    {
+      "type": "range",
+      "id": "badge_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Label corner radius",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What sets us apart is what makes them"
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Heading highlight",
+      "default": " stronger."
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "info": "Optional line under the heading."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_before",
+      "label": "Before image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_after",
+      "label": "After image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Fallback image (before)",
+      "info": "Used if Before image is empty."
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "Before label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "After label",
+      "default": "After"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "side",
+          "label": "Side",
+          "options": [
+            { "value": "left", "label": "Left of circle" },
+            { "value": "right", "label": "Right of circle" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "drop-simple", "label": "DropSimple" },
+            { "value": "eyedropper-sample", "label": "EyedropperSample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "HandHeart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "StarFour" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "CheckCircle" },
+            { "value": "drop-slash", "label": "DropSlash" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "hands-clapping", "label": "HandsClapping" },
+            { "value": "magic-wand", "label": "MagicWand" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "push-pin", "label": "PushPin" },
+            { "value": "rocket-launch", "label": "RocketLaunch" },
+            { "value": "scan-smiley", "label": "ScanSmiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "seal-check", "label": "SealCheck" },
+            { "value": "shield-check", "label": "ShieldCheck" },
+            { "value": "shooting-star", "label": "ShootingStar" },
+            { "value": "smiley-sticker", "label": "SmileySticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "x-circle", "label": "XCircle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "SprayBottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "shirt-folded", "label": "ShirtFolded" },
+            { "value": "security-camera", "label": "SecurityCamera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "PlusCircle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "PawPrint" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "PaintBrush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "airplane-tilt", "label": "Airplane" },
+            { "value": "hand-pointing", "label": "Hand pointing" },
+            { "value": "chat-circle-dots", "label": "Chat" },
+            { "value": "fist", "label": "Fist" },
+            { "value": "none", "label": "None" }
+          ],
+          "default": "drop-simple"
+        },
+        {
+          "type": "color",
+          "id": "icon_circle_bg",
+          "label": "Icon circle background",
+          "info": "Optional. Uses section default if empty."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Benefit title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>Short supporting copy for this benefit.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before and after 2",
+      "blocks": [
+        {
+          "type": "point",
+          "settings": {
+            "side": "left",
+            "icon": "plant",
+            "icon_circle_bg": "#e8f5e9",
+            "title": "Real Food",
+            "text": "<p>Wholesome recipes with real meat and veggies.</p>"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "left",
+            "icon": "star-four",
+            "icon_circle_bg": "#fff8e1",
+            "title": "Premium Ingredients",
+            "text": "<p>Elevating pet care with unmatched safety and quality.</p>"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "right",
+            "icon": "sparkle",
+            "icon_circle_bg": "#e0f7fa",
+            "title": "Made Fresh",
+            "text": "<p>We maintain the integrity of whole foods and nutrition.</p>"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "right",
+            "icon": "paw-print",
+            "icon_circle_bg": "#fce4ec",
+            "title": "Vet Developed",
+            "text": "<p>Nutrition that surpasses industry expectations.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

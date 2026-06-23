@@ -1,0 +1,694 @@
+{% comment %} Section layout style {% endcomment %}
+{{ 'tpt-section.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Section configuration {% endcomment %}
+{%- render 'tpt-section-setting', section: section -%}
+
+{%- if section.index and section.settings.section_lazyload -%}
+  <script src="{{ 'tpt-section-lazyload.js' | asset_url }}" defer="defer"></script>
+
+  <tpt-section-lazyload data-url="?section_id={{ section.id }}">
+    <div data-lazyload-element></div>
+    <span class="tpt-section_loader"></span>
+  </tpt-section-lazyload>
+{%- else -%}
+  {% comment %} Current section style {% endcomment %}
+  {{ 'tpt-footer-1.css' | asset_url | stylesheet_tag }}
+
+  <div class="tpt-section_container">
+    <div class="tpt-section_content">
+      {% comment %} Section header {% endcomment %}
+      {%- render 'tpt-section-header', section: section -%}
+
+      <div class="tpt-section-body">
+        {% comment %} Section body {% endcomment %}
+        <div class="tpt-footer-1" style="
+          --payment-icon-width: {{ section.settings.payment_icon_width }}px; 
+          --payment-icon-height: {{ section.settings.payment_icon_height }}px; 
+          --payment-border-radius: {{ section.settings.payment_border_radius }}px; 
+          --newsletter-icon-size: {{ section.settings.newsletter_icon_size }}px;
+          --newsletter-input-border-color: {{ section.settings.newsletter_input_border_color.red }},{{ section.settings.newsletter_input_border_color.green }},{{ section.settings.newsletter_input_border_color.blue }}; 
+          --newsletter-icon-color: {{ section.settings.newsletter_icon_color.red }},{{ section.settings.newsletter_icon_color.green }},{{ section.settings.newsletter_icon_color.blue }};"
+        >
+          <div class="tpt-footer-1_main">
+            <!-- Menu Columns -->
+            {% for block in section.blocks %}
+              {% case block.type %}
+                {% when 'menu_column' %}
+                  <div class="tpt-footer-1_column tpt-footer-1_column-menu" {{ block.shopify_attributes }}>
+                    {% if block.settings.menu_title != blank %}
+                      <h4 class="tpt-footer-1_menu-title tpt-section__foreground--color">{{ block.settings.menu_title }}</h4>
+                    {% endif %}
+                    
+                    {% if block.settings.menu != blank %}
+                      <ul class="tpt-footer-1_menu-list">
+                        {% for link in linklists[block.settings.menu].links %}
+                          <li class="tpt-footer-1_menu-item">
+                            <a href="{{ link.url }}" class="tpt-footer-1_menu-link tpt-section__foreground--color">
+                              {{ link.title }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+              {% endcase %}
+            {% endfor %}
+            <!-- Logo and Newsletter Column -->
+            <div class="tpt-footer-1_column tpt-footer-1_column-main">
+              {% if section.settings.logo != blank %}
+                <div class="tpt-footer-1_logo">
+                  <a href="{{ routes.root_url }}">
+                    {%- assign image_size = section.settings.logo_width | append: 'x' -%}
+                    {{
+                      section.settings.logo
+                      | image_url: width: section.settings.logo_width
+                      | image_tag:
+                        alt: section.settings.logo.alt | default: shop.name,
+                        loading: 'lazy',
+                        width: section.settings.logo_width,
+                        style: "height: auto; width: 100%;"
+                    }}
+                  </a>
+                </div>
+              {% endif %}
+
+              {% if section.settings.show_newsletter %}
+                <div class="tpt-footer-1_newsletter">
+                  {% if section.settings.newsletter_heading != blank %}
+                    <h4 class="tpt-footer-1_newsletter-title tpt-section__foreground--color">{{ section.settings.newsletter_heading }}</h4>
+                  {% endif %}
+                  
+                  {%- form 'customer', id: 'ContactFooter', class: 'tpt-footer-1_newsletter-form' -%}
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <div class="tpt-footer-1_newsletter-fields">
+                      <div class="tpt-field">
+                        <input
+                          id="ContactFooter-email"
+                          type="email"
+                          name="contact[email]"
+                          class="tpt-input__email tpt-input_text"
+                          value="{{ form.email }}"
+                          aria-required="true"
+                          autocorrect="off"
+                          autocapitalize="off"
+                          autocomplete="email"
+                          placeholder="Email"
+                          required
+                        >
+                        <label class="field__label" for="ContactFooter-email">
+                          Email
+                        </label>
+                      </div>
+                      <button type="submit" class="" name="commit">
+                        <span>
+                          <svg
+                              viewBox="0 0 14 10"
+                              fill="none"
+                              aria-hidden="true"
+                              focusable="false"
+                              class="icon icon-arrow"
+                              xmlns="http://www.w3.org/2000/svg"
+                          >
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M8.537.808a.5.5 0 01.817-.162l4 4a.5.5 0 010 .708l-4 4a.5.5 0 11-.708-.708L11.793 5.5H1a.5.5 0 010-1h10.793L8.646 1.354a.5.5 0 01-.109-.546z" fill="currentColor">
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    {%- if form.errors -%}
+                      <div class="tpt-form-error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</div>
+                    {%- endif -%}
+                    {%- if form.posted_successfully? -%}
+                      <div class="tpt-form-success">Thanks for subscribing</div>
+                    {%- endif -%}
+                  {%- endform -%}
+                </div>
+              {% endif %}
+
+              {% comment %} Check if there are any social links to show {% endcomment %}
+              {%- assign has_social_links = false -%}
+              {% if section.settings.manual_social_config %}
+                {% if section.settings.manual_facebook_link != blank or 
+                      section.settings.manual_twitter_link != blank or 
+                      section.settings.manual_instagram_link != blank or 
+                      section.settings.manual_pinterest_link != blank or 
+                      section.settings.manual_youtube_link != blank or 
+                      section.settings.manual_tiktok_link != blank %}
+                  {%- assign has_social_links = true -%}
+                {% endif %}
+              {% else %}
+                {% if settings.social_facebook_link != blank or 
+                      settings.social_twitter_link != blank or 
+                      settings.social_instagram_link != blank or 
+                      settings.social_pinterest_link != blank or 
+                      settings.social_youtube_link != blank or 
+                      settings.social_tiktok_link != blank %}
+                  {%- assign has_social_links = true -%}
+                {% endif %}
+              {% endif %}
+
+              {% if section.settings.social_heading != blank and section.settings.show_social and has_social_links %}
+                <div class="tpt-footer-1_social">
+                  <h4 class="tpt-footer-1_social-title tpt-section__foreground--color">{{ section.settings.social_heading }}</h4>
+                  <ul class="tpt-footer-1_social-list">
+                    {% if section.settings.manual_social_config %}
+                      <!-- Manual Social Configuration -->
+                      {% if section.settings.manual_facebook_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.manual_facebook_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v1.222h2l-.209 2h-1.791v7h-3v-7h-2v-2h2v-2.308c0-1.769.931-2.692 3.029-2.692h1.971v3z"/></svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if section.settings.manual_twitter_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.manual_twitter_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                              <path d="M18.244 2H21l-6.72 7.692L21.812 22H15.8l-4.448-6.31L6.244 22H3l7.166-8.21L2.625 2h6.148l4.03 5.8L18.244 2zM16.628 20.2h1.176L7.54 3.7H6.292l10.336 16.5z"/>
+                            </svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if section.settings.manual_instagram_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.manual_instagram_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if section.settings.manual_pinterest_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.social_pinterest_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Pinterest">
+                             <svg width="64px" height="64px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>pinterest [#180]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-220.000000, -7399.000000)" fill="currentColor"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M173.876,7239 C168.399,7239 164,7243.43481 164,7248.95866 C164,7253.05869 166.407,7256.48916 169.893,7258.07936 C169.893,7256.21186 169.88,7256.45286 171.303,7250.38046 C170.521,7248.80236 171.129,7246.19673 172.88,7246.19673 C175.31,7246.19673 173.659,7249.79964 173.378,7251.2174 C173.129,7252.30544 173.959,7253.14238 174.955,7253.14238 C176.864,7253.14238 178.108,7250.71524 178.108,7247.87063 C178.108,7245.69456 176.615,7244.10437 174.042,7244.10437 C169.467,7244.10437 168.307,7249.19966 169.893,7250.79893 C170.292,7251.40294 169.893,7251.43118 169.893,7252.22174 C169.616,7253.05768 167.403,7251.84259 167.403,7248.70757 C167.403,7245.86195 169.727,7242.51518 174.457,7242.51518 C178.191,7242.51518 180.681,7245.27609 180.681,7248.2054 C180.681,7252.13805 178.523,7254.98366 175.37,7254.98366 C174.291,7254.98366 173.295,7254.3978 172.963,7253.72824 C172.36,7256.07371 172.238,7257.26258 171.303,7258.58153 C172.216,7258.83261 173.129,7259 174.125,7259 C179.602,7259 184,7254.56519 184,7249.04235 C183.752,7243.43481 179.353,7239 173.876,7239" id="pinterest-[#180]"> </path> </g> </g> </g> </g></svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if section.settings.manual_youtube_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.manual_youtube_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="YouTube">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.441 16.892c-2.102.144-6.784.144-8.883 0-2.276-.156-2.541-1.27-2.558-4.892.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0 2.277.156 2.541 1.27 2.559 4.892-.018 3.629-.285 4.736-2.559 4.892zm-6.441-7.234l4.917 2.338-4.917 2.346v-4.684z"/></svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                      {% if section.settings.manual_tiktok_link != blank %}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ section.settings.manual_tiktok_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="TikTok">
+                            <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M21,2H3A1,1,0,0,0,2,3V21a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V3A1,1,0,0,0,21,2Zm-3.281,8.725h0c-.109.011-.219.016-.328.017A3.571,3.571,0,0,1,14.4,9.129v5.493a4.061,4.061,0,1,1-4.06-4.06c.085,0,.167.008.251.013v2a2.067,2.067,0,1,0-.251,4.119A2.123,2.123,0,0,0,12.5,14.649l.02-9.331h1.914A3.564,3.564,0,0,0,17.719,8.5Z"></path></g></svg>
+                          </a>
+                        </li>
+                      {% endif %}
+                    {% else %}
+                      <!-- Theme Settings Social Configuration -->
+                      {%- if settings.social_facebook_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_facebook_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v1.222h2l-.209 2h-1.791v7h-3v-7h-2v-2h2v-2.308c0-1.769.931-2.692 3.029-2.692h1.971v3z"/></svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- if settings.social_twitter_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_twitter_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                              <path d="M18.244 2H21l-6.72 7.692L21.812 22H15.8l-4.448-6.31L6.244 22H3l7.166-8.21L2.625 2h6.148l4.03 5.8L18.244 2zM16.628 20.2h1.176L7.54 3.7H6.292l10.336 16.5z"/>
+                            </svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- if settings.social_instagram_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_instagram_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- if settings.social_pinterest_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_pinterest_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="Pinterest">
+                             <svg width="64px" height="64px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>pinterest [#180]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-220.000000, -7399.000000)" fill="currentColor"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M173.876,7239 C168.399,7239 164,7243.43481 164,7248.95866 C164,7253.05869 166.407,7256.48916 169.893,7258.07936 C169.893,7256.21186 169.88,7256.45286 171.303,7250.38046 C170.521,7248.80236 171.129,7246.19673 172.88,7246.19673 C175.31,7246.19673 173.659,7249.79964 173.378,7251.2174 C173.129,7252.30544 173.959,7253.14238 174.955,7253.14238 C176.864,7253.14238 178.108,7250.71524 178.108,7247.87063 C178.108,7245.69456 176.615,7244.10437 174.042,7244.10437 C169.467,7244.10437 168.307,7249.19966 169.893,7250.79893 C170.292,7251.40294 169.893,7251.43118 169.893,7252.22174 C169.616,7253.05768 167.403,7251.84259 167.403,7248.70757 C167.403,7245.86195 169.727,7242.51518 174.457,7242.51518 C178.191,7242.51518 180.681,7245.27609 180.681,7248.2054 C180.681,7252.13805 178.523,7254.98366 175.37,7254.98366 C174.291,7254.98366 173.295,7254.3978 172.963,7253.72824 C172.36,7256.07371 172.238,7257.26258 171.303,7258.58153 C172.216,7258.83261 173.129,7259 174.125,7259 C179.602,7259 184,7254.56519 184,7249.04235 C183.752,7243.43481 179.353,7239 173.876,7239" id="pinterest-[#180]"> </path> </g> </g> </g> </g></svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- if settings.social_youtube_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_youtube_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="YouTube">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm4.441 16.892c-2.102.144-6.784.144-8.883 0-2.276-.156-2.541-1.27-2.558-4.892.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0 2.277.156 2.541 1.27 2.559 4.892-.018 3.629-.285 4.736-2.559 4.892zm-6.441-7.234l4.917 2.338-4.917 2.346v-4.684z"/></svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- if settings.social_tiktok_link != blank -%}
+                        <li class="tpt-footer-1_social-item">
+                          <a href="{{ settings.social_tiktok_link }}" class="tpt-footer-1_social-link" target="_blank" aria-label="TikTok">
+                              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M21,2H3A1,1,0,0,0,2,3V21a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V3A1,1,0,0,0,21,2Zm-3.281,8.725h0c-.109.011-.219.016-.328.017A3.571,3.571,0,0,1,14.4,9.129v5.493a4.061,4.061,0,1,1-4.06-4.06c.085,0,.167.008.251.013v2a2.067,2.067,0,1,0-.251,4.119A2.123,2.123,0,0,0,12.5,14.649l.02-9.331h1.914A3.564,3.564,0,0,0,17.719,8.5Z"></path></g></svg>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                    {% endif %}
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Payment method badges -->
+          {% if section.settings.show_payment_methods %}
+            <div class="tpt-footer-1_bottom">
+
+              <!-- Copyright -->
+              <div class="tpt-footer-1_copyright tpt-section__foreground--color">
+                  {% if section.settings.copyright_text != blank %}
+                    {{ section.settings.copyright_text }}
+                  {% else %}
+                    &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}
+                  {% endif %}
+                </div>
+
+              <div class="tpt-footer-1_payment">
+                {% comment %} Only show payment heading if there are social links {% endcomment %}
+                {% if section.settings.payment_heading != blank %}
+                  <div class="tpt-footer-1_payment-title tpt-section__foreground--color">{{ section.settings.payment_heading }}</div>
+                {% endif %}
+                <div class="tpt-footer-1_payment-icons">
+                  {% if section.settings.manual_payment_config %}
+                    <!-- Manual Payment Icons -->
+                    {% for block in section.blocks %}
+                      {% case block.type %}
+                        {% when 'payment_icon' %}
+                          <span class="tpt-footer-1_payment-icon tpt-footer-1_payment-icon--manual" {{ block.shopify_attributes }}>
+                            {% if block.settings.payment_image != blank %}
+                              {{
+                                block.settings.payment_image
+                                | image_url: width: section.settings.payment_icon_width, height: section.settings.payment_icon_height
+                                | image_tag:
+                                  alt: block.settings.payment_name | default: 'Payment method',
+                                  loading: 'lazy',
+                                  width: section.settings.payment_icon_width,
+                                  height: section.settings.payment_icon_height
+                              }}
+                            {% endif %}
+                          </span>
+                      {% endcase %}
+                    {% endfor %}
+                  {% else %}
+                    <!-- Shop Payment Types -->
+                    {% for type in shop.enabled_payment_types %}
+                      <span class="tpt-footer-1_payment-icon">
+                        {{ type | payment_type_svg_tag }}
+                      </span>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        {% comment %} End section body {% endcomment %}
+      </div>
+
+      {% comment %} Section footer {% endcomment %}
+      {%- render 'tpt-section-footer', section: section -%}
+    </div>
+  </div>
+{%- endif -%}{%- unless content_for_header contains 'tapita-section-script-tags' -%}{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}{%- endunless -%}
+
+
+{% schema %}
+{
+  "name": "Tpt - Footer #1",
+  "class": "tpt-section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 100,
+      "unit": "px",
+      "label": "Logo width"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter heading",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "range",
+      "id": "newsletter_icon_size",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Newsletter arrow icon size",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "newsletter_input_border_color",
+      "label": "Newsletter input border color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "newsletter_icon_color",
+      "label": "Newsletter icon color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "Show social icons",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "social_heading",
+      "label": "Social heading",
+      "default": "Follow us"
+    },
+    {
+      "type": "checkbox",
+      "id": "manual_social_config",
+      "label": "Manual social configuration",
+      "default": false,
+      "info": "Enable to configure social links manually instead of using theme settings"
+    },
+    {
+      "type": "url",
+      "id": "manual_facebook_link",
+      "label": "Facebook URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "url",
+      "id": "manual_twitter_link",
+      "label": "X URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "url",
+      "id": "manual_instagram_link",
+      "label": "Instagram URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "url",
+      "id": "manual_pinterest_link",
+      "label": "Pinterest URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "url",
+      "id": "manual_youtube_link",
+      "label": "YouTube URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "url",
+      "id": "manual_tiktok_link",
+      "label": "TikTok URL",
+      "visible_if": "{{ section.settings.manual_social_config }}"
+    },
+    {
+      "type": "header",
+      "content": "Payment Methods & Copyright"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_methods",
+      "label": "Show payment methods",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "payment_heading",
+      "label": "Payment heading",
+      "default": "Payment Methods"
+    },
+    {
+      "type": "checkbox",
+      "id": "manual_payment_config",
+      "label": "Manual payment configuration",
+      "default": false,
+      "info": "Enable to upload custom payment icons instead of using shop's enabled payment types"
+    },
+    {
+      "type": "range",
+      "id": "payment_icon_width",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Payment icon width",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "payment_icon_height",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Payment icon height",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "payment_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Payment icon border radius",
+      "default": 4
+    },
+    {
+      "type": "richtext",
+      "id": "copyright_text",
+      "label": "Copyright text"
+    },
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Section full width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 1200,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Section max width",
+      "default": 1600
+    },
+    {
+      "type": "checkbox",
+      "id": "content_full_width",
+      "label": "Content full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 800,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 1440
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding tablet, mobile",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin desktop",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin tablet, mobile",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient_color",
+      "label": "Background gradient"
+    },
+    {
+      "type": "color",
+      "id": "foreground_color",
+      "label": "Foreground",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_button_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Input, button radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section optimize"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_lazyload",
+      "label": "Section lazyload",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_column",
+      "name": "Menu column",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Menu title",
+          "default": "Quick Links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "default": "main-menu"
+        }
+      ]
+    },
+    {
+      "type": "payment_icon",
+      "name": "Payment icon",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "payment_name",
+          "label": "Payment method name",
+          "default": "Payment method",
+          "info": "Used for alt text accessibility"
+        },
+        {
+          "type": "image_picker",
+          "id": "payment_image",
+          "label": "Payment icon image",
+          "info": "Recommended size: 60x38px"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tpt - Footer #1",
+      "blocks": [
+        {
+          "type": "menu_column"
+        },
+        {
+          "type": "menu_column"
+        },
+        {
+          "type": "menu_column"
+        }
+      ]
+    }
+  ]
+}  
+{% endschema %}

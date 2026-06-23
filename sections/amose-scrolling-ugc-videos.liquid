@@ -1,0 +1,480 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign tp_stars_src = s.trustpilot_stars_image
+  if tp_stars_src == blank
+    assign tp_stars_src = 'https://i.imgur.com/EHjNmTM.png'
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-scrolling-ugc-root {
+    --sugc-bg: {{ s.section_bg }};
+    --sugc-text: {{ s.text_color }};
+    --sugc-muted: {{ s.muted_text_color }};
+    --sugc-heading: clamp(22px, 2.5vw, 30px);
+    --sugc-body: clamp(14px, 1.2vw, 16px);
+    --sugc-aspect-ratio: {{ s.video_aspect_ratio | default: '9 / 16' }};
+    --sugc-gap: {{ s.card_gap }}px;
+    --sugc-radius: {{ s.video_radius }}px;
+    --sugc-duration: {{ s.scroll_speed }}s;
+    background: var(--sugc-bg);
+    color: var(--sugc-text);
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-scrolling-ugc-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__header {
+    margin-bottom: clamp(16px, 2.4vw, 26px);
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__heading {
+    margin: 0;
+    font-size: var(--sugc-heading);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__sub {
+    margin: 14px 0 0;
+    color: var(--sugc-muted);
+    max-width: 56ch;
+    font-size: var(--sugc-body);
+    line-height: 1.55;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__kicker {
+    margin: 0 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--sugc-muted);
+    font-weight: 500;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: {{ s.star_color }};
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__stars svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__stars--trustpilot {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__stars--trustpilot img {
+    height: 16px;
+    width: auto;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__rail {
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-sugc__rail {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__track {
+    display: flex;
+    width: max-content;
+    gap: var(--sugc-gap);
+    animation: amose-scroll-ugc-{{ section.id }} var(--sugc-duration) linear infinite;
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__rail:hover .amose-sugc__track {
+    animation-play-state: paused;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__group {
+    display: flex;
+    gap: var(--sugc-gap);
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__item {
+    position: relative;
+    isolation: isolate;
+    width: clamp(156px, 18vw, 220px);
+    aspect-ratio: var(--sugc-aspect-ratio);
+    border-radius: var(--sugc-radius);
+    overflow: hidden;
+    background: #e5e7eb;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__item video,
+  #shopify-section-{{ section.id }} .amose-sugc__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__caption {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    margin: 0;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sugc__sound {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+  }
+
+  @keyframes amose-scroll-ugc-{{ section.id }} {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-50% - (var(--sugc-gap) / 2))); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .amose-sugc__track { animation: none; }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<section class="amose-sugc__wrap">
+  <div class="amose-sugc__header">
+    {% if s.kicker != blank %}
+      <p class="amose-sugc__kicker">
+        {% if s.rating_style == 'trustpilot' %}
+          <span class="amose-sugc__stars amose-sugc__stars--trustpilot" aria-hidden="true">
+            <img src="{{ tp_stars_src }}" alt="" loading="lazy" decoding="async">
+          </span>
+        {% else %}
+          <span class="amose-sugc__stars" aria-hidden="true">
+            {% for i in (1..5) %}
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path d="M12 2l2.9 6.6L22 9.2l-5 4.9 1.2 7L12 17.8 5.8 21l1.2-7-5-4.9 7.1-0.6z"></path>
+              </svg>
+            {% endfor %}
+          </span>
+        {% endif %}
+        <span>{{ s.kicker }}</span>
+      </p>
+    {% endif %}
+    <h2 class="amose-sugc__heading">{{ s.heading | escape }}</h2>
+    {% if s.subheading != blank %}
+      <p class="amose-sugc__sub">{{ s.subheading | escape }}</p>
+    {% endif %}
+  </div>
+
+  <div class="amose-sugc__rail">
+    <div class="amose-sugc__track">
+      <div class="amose-sugc__group">
+        {% for block in section.blocks %}
+          <article class="amose-sugc__item" {{ block.shopify_attributes }}>
+            {% if block.settings.video_url != blank %}
+              <video
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                data-amose-sugc-video
+              >
+                <source src="{{ block.settings.video_url | escape }}" type="video/mp4">
+              </video>
+              <button type="button" class="amose-sugc__sound" data-amose-sugc-sound aria-label="Unmute video">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" data-icon-muted>
+                  <path d="M5 10v4h3l4 4V6L8 10H5zM15 9l6 6M21 9l-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" data-icon-unmuted style="display:none;">
+                  <path d="M5 10v4h3l4 4V6L8 10H5zM16 9.5a4.5 4.5 0 010 5M18.8 7a8 8 0 010 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            {% else %}
+              <div style="width:100%;height:100%;background:#d1d5db;"></div>
+            {% endif %}
+            {% if block.settings.caption != blank %}
+              <p class="amose-sugc__caption">{{ block.settings.caption | escape }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="amose-sugc__group" aria-hidden="true">
+        {% for block in section.blocks %}
+          <article class="amose-sugc__item">
+            {% if block.settings.video_url != blank %}
+              <video
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                data-amose-sugc-video
+              >
+                <source src="{{ block.settings.video_url | escape }}" type="video/mp4">
+              </video>
+              <button type="button" class="amose-sugc__sound" data-amose-sugc-sound aria-label="Unmute video">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" data-icon-muted>
+                  <path d="M5 10v4h3l4 4V6L8 10H5zM15 9l6 6M21 9l-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" data-icon-unmuted style="display:none;">
+                  <path d="M5 10v4h3l4 4V6L8 10H5zM16 9.5a4.5 4.5 0 010 5M18.8 7a8 8 0 010 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            {% else %}
+              <div style="width:100%;height:100%;background:#d1d5db;"></div>
+            {% endif %}
+            {% if block.settings.caption != blank %}
+              <p class="amose-sugc__caption">{{ block.settings.caption | escape }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById("shopify-section-{{ section.id }}");
+    if (!root) return;
+    var videos = root.querySelectorAll("[data-amose-sugc-video]");
+    var soundButtons = root.querySelectorAll("[data-amose-sugc-sound]");
+    var pauseOnHoverTarget = root.querySelector(".amose-sugc__rail");
+    var updateButtonState = function (btn, muted) {
+      if (!btn) return;
+      var iconMuted = btn.querySelector("[data-icon-muted]");
+      var iconUnmuted = btn.querySelector("[data-icon-unmuted]");
+      if (iconMuted) iconMuted.style.display = muted ? "" : "none";
+      if (iconUnmuted) iconUnmuted.style.display = muted ? "none" : "";
+      btn.setAttribute("aria-label", muted ? "Unmute video" : "Mute video");
+    };
+
+    videos.forEach(function (video) {
+      video.muted = true;
+      video.playsInline = true;
+      video.loop = true;
+      var playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    });
+    soundButtons.forEach(function (btn) {
+      updateButtonState(btn, true);
+    });
+
+    var muteAllExcept = function (activeVideo) {
+      videos.forEach(function (v) {
+        var card = v.closest(".amose-sugc__item");
+        var button = card ? card.querySelector("[data-amose-sugc-sound]") : null;
+        var shouldMute = v !== activeVideo;
+        v.muted = shouldMute;
+        updateButtonState(button, shouldMute);
+      });
+    };
+
+    soundButtons.forEach(function (btn) {
+      btn.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var card = btn.closest(".amose-sugc__item");
+        if (!card) return;
+        var video = card.querySelector("[data-amose-sugc-video]");
+        if (!video) return;
+
+        var shouldUnmute = video.muted;
+        if (shouldUnmute) {
+          muteAllExcept(video);
+          video.muted = false;
+          updateButtonState(btn, false);
+          try { video.play(); } catch (e) {}
+        } else {
+          video.muted = true;
+          updateButtonState(btn, true);
+        }
+      });
+    });
+
+    if (pauseOnHoverTarget) {
+      pauseOnHoverTarget.addEventListener("mouseleave", function () {
+        videos.forEach(function (v) {
+          if (v.paused) {
+            try { v.play(); } catch (e) {}
+          }
+        });
+      });
+    }
+  })();
+</script>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "scrolling-ugc-videos"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Scrolling UGC Videos",
+  "tag": "section",
+  "class": "amose-scrolling-ugc-root",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "range", "id": "max_width", "min": 960, "max": 1600, "step": 20, "unit": "px", "label": "Max width", "default": 1320 },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "4.7/5 | Viral Product" },
+    {
+      "type": "select",
+      "id": "rating_style",
+      "label": "Rating style",
+      "default": "normal",
+      "options": [
+        { "value": "normal", "label": "Normal stars" },
+        { "value": "trustpilot", "label": "Trustpilot-style stars" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_stars_image",
+      "label": "Trustpilot stars image URL",
+      "info": "Leave blank to use the default Trustpilot stars image."
+    },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What Our Followers Think" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Find quick answers to the most common questions about our product." },
+    { "type": "color", "id": "star_color", "label": "Star color", "default": "#5f46af" },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Video card format",
+      "default": "9 / 16",
+      "options": [
+        { "value": "9 / 16", "label": "9:16 (Vertical)" },
+        { "value": "4 / 7", "label": "4:7 (Extra vertical)" },
+        { "value": "3 / 5", "label": "3:5 (Vertical)" },
+        { "value": "2 / 3", "label": "2:3 (Portrait)" },
+        { "value": "4 / 5", "label": "4:5 (Portrait)" }
+      ]
+    },
+    { "type": "range", "id": "card_gap", "min": 6, "max": 30, "step": 1, "unit": "px", "label": "Card gap", "default": 10 },
+    { "type": "range", "id": "video_radius", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Video corner radius", "default": 12 },
+    { "type": "range", "id": "scroll_speed", "min": 10, "max": 90, "step": 1, "unit": "s", "label": "Scroll duration", "default": 28 },
+    { "type": "color", "id": "section_bg", "label": "Section background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Heading color", "default": "#171717" },
+    { "type": "color", "id": "muted_text_color", "label": "Subheading color", "default": "#5c5f62" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 28 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 28 }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video card",
+      "settings": [
+        { "type": "url", "id": "video_url", "label": "Video URL (mp4)" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "Real customer video" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling UGC Videos",
+      "blocks": [
+        { "type": "video", "settings": { "caption": "How I got rid of my double chin in only a few weeks" } },
+        { "type": "video", "settings": { "caption": "Green light routine" } },
+        { "type": "video", "settings": { "caption": "Daily check-in" } },
+        { "type": "video", "settings": { "caption": "Red light therapy" } },
+        { "type": "video", "settings": { "caption": "Night routine result" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

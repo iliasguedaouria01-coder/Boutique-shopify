@@ -1,0 +1,610 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign tp_stars_src = s.trustpilot_stars_image
+  if tp_stars_src == blank
+    assign tp_stars_src = 'https://i.imgur.com/EHjNmTM.png'
+  endif
+-%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .amose-hb {
+    --hb-max-width: {{ s.max_width }}px;
+    --hb-text: {{ s.text_color }};
+    --hb-muted: {{ s.muted_text_color }};
+    --hb-accent: {{ s.accent_color }};
+    --hb-star: {{ s.star_color }};
+    --hb-icon-color: {{ s.icon_color }};
+    --hb-icon-bg: {{ s.icon_bg_color }};
+    --hb-btn-bg: {{ s.button_bg }};
+    --hb-btn-text: {{ s.button_text_color }};
+    --hb-heading: clamp(22px, 2.5vw, 30px);
+    --hb-body: clamp(14px, 1.2vw, 16px);
+    --hb-lh-heading: 1.15;
+    --hb-lh-body: 1.55;
+    --hb-pad-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    --hb-pad-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    position: relative;
+    padding-top: var(--hb-pad-top);
+    padding-bottom: var(--hb-pad-bottom);
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .amose-hb {
+      --hb-pad-top: {{ s.padding_top }}px;
+      --hb-pad-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__wrap {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+    background: #ffffff;
+  }
+
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-hb__shell {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--hb-accent) 16%, #ffffff) 0%,
+        color-mix(in srgb, var(--hb-accent) 24%, #ffffff) 100%
+      );
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__media {
+      position: relative;
+      background: transparent;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__content {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--hb-accent) 16%, #ffffff) 0%,
+        color-mix(in srgb, var(--hb-accent) 18%, #ffffff) 24%,
+        color-mix(in srgb, var(--hb-accent) 20%, #ffffff) 42%,
+        color-mix(in srgb, var(--hb-accent) 26%, #ffffff) 100%
+      ) !important;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__media img {
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 42%,
+        rgba(0, 0, 0, 0.9) 58%,
+        rgba(0, 0, 0, 0.74) 70%,
+        rgba(0, 0, 0, 0.52) 80%,
+        rgba(0, 0, 0, 0.28) 90%,
+        rgba(0, 0, 0, 0.12) 96%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      mask-image: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 42%,
+        rgba(0, 0, 0, 0.9) 58%,
+        rgba(0, 0, 0, 0.74) 70%,
+        rgba(0, 0, 0, 0.52) 80%,
+        rgba(0, 0, 0, 0.28) 90%,
+        rgba(0, 0, 0, 0.12) 96%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__media {
+      order: 2;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__content {
+      order: 1;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__content {
+      text-align: center;
+      justify-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__kicker,
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__benefit {
+      justify-content: center;
+      text-align: center;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__cta {
+      justify-self: center;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb[data-layout='content-left'] .amose-hb__media img {
+      -webkit-mask-image: linear-gradient(
+        270deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 42%,
+        rgba(0, 0, 0, 0.9) 58%,
+        rgba(0, 0, 0, 0.74) 70%,
+        rgba(0, 0, 0, 0.52) 80%,
+        rgba(0, 0, 0, 0.28) 90%,
+        rgba(0, 0, 0, 0.12) 96%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      mask-image: linear-gradient(
+        270deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 42%,
+        rgba(0, 0, 0, 0.9) 58%,
+        rgba(0, 0, 0, 0.74) 70%,
+        rgba(0, 0, 0, 0.52) 80%,
+        rgba(0, 0, 0, 0.28) 90%,
+        rgba(0, 0, 0, 0.12) 96%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__media {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  @media (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-hb__shell {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--hb-accent) 16%, #ffffff) 0%,
+        color-mix(in srgb, var(--hb-accent) 24%, #ffffff) 100%
+      );
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__media {
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+      background: transparent;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__media::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 230px;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 26%,
+        rgba(255, 255, 255, 0.22) 46%,
+        rgba(255, 255, 255, 0.34) 66%,
+        rgba(255, 255, 255, 0.4) 82%,
+        color-mix(in srgb, var(--hb-accent) 20%, #ffffff) 100%
+      );
+      pointer-events: none;
+    }
+
+    #shopify-section-{{ section.id }} .amose-hb__content {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 18%,
+        color-mix(in srgb, var(--hb-accent) 16%, #ffffff) 42%,
+        color-mix(in srgb, var(--hb-accent) 24%, #ffffff) 100%
+      ) !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+      margin-top: -20px !important;
+      position: relative;
+      z-index: 2;
+      border-top-left-radius: 0 !important;
+      border-top-right-radius: 0 !important;
+      padding-top: clamp(20px, 5vw, 28px) !important;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__content {
+    display: grid;
+    gap: 18px;
+    align-content: center;
+    padding: clamp(22px, 3vw, 42px);
+    color: var(--hb-text);
+    background: transparent;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__kicker {
+    margin: 15px 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--hb-muted);
+    font-weight: 500;
+  }
+
+  /* Prevent first-paint flash of star rating/kicker before full section styles settle. */
+  #shopify-section-{{ section.id }} .amose-hb.is-pending .amose-hb__kicker {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb.is-ready .amose-hb__kicker {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.18s ease;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--hb-star);
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__stars svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__stars--trustpilot {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__stars--trustpilot img {
+    height: 16px;
+    width: auto;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__heading {
+    margin: 0;
+    font-size: var(--hb-heading);
+    line-height: var(--hb-lh-heading);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__subtitle {
+    margin: 0;
+    color: var(--hb-muted);
+    font-size: clamp(14px, 1.2vw, 16px);
+    line-height: 1.5;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__benefits {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__benefit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--hb-text);
+    font-size: var(--hb-body);
+    line-height: var(--hb-lh-body);
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--hb-icon-bg);
+    color: var(--hb-icon-color);
+    font-size: 14px;
+    line-height: 1;
+    flex: 0 0 20px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__cta {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    text-decoration: none;
+    padding: 14px 24px;
+    min-height: 50px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1;
+    background: var(--hb-btn-bg);
+    color: var(--hb-btn-text);
+    transition: transform 0.16s ease, opacity 0.16s ease;
+  }
+
+  #shopify-section-{{ section.id }} .amose-hb__cta:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<section class="amose-hb is-pending" data-layout="{{ s.desktop_layout | default: 'image-left' }}">
+  <div class="amose-hb__wrap">
+    <div class="amose-hb__shell">
+      <div class="amose-hb__media">
+        {% if s.image != blank %}
+          {{ s.image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: s.heading | escape }}
+        {% endif %}
+      </div>
+      <div class="amose-hb__content">
+        {% if s.kicker != blank %}
+          <p class="amose-hb__kicker" data-amose-hb-kicker style="opacity: 0; visibility: hidden;">
+            {% if s.rating_style == 'trustpilot' %}
+              <span class="amose-hb__stars amose-hb__stars--trustpilot" aria-hidden="true">
+                <img src="{{ tp_stars_src }}" alt="" loading="lazy" decoding="async">
+              </span>
+            {% else %}
+              <span class="amose-hb__stars" aria-hidden="true">
+                {% for i in (1..5) %}
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                    <path d="M12 2l2.9 6.6L22 9.2l-5 4.9 1.2 7L12 17.8 5.8 21l1.2-7-5-4.9 7.1-0.6z"></path>
+                  </svg>
+                {% endfor %}
+              </span>
+            {% endif %}
+            <span>{{ s.kicker }}</span>
+          </p>
+        {% endif %}
+        <h2 class="amose-hb__heading">{{ s.heading }}</h2>
+        {% if s.subtitle != blank %}<p class="amose-hb__subtitle">{{ s.subtitle }}</p>{% endif %}
+
+        {% if section.blocks.size > 0 %}
+          <ul class="amose-hb__benefits">
+            {% for block in section.blocks %}
+              {% if block.type == 'benefit' and block.settings.text != blank %}
+                <li class="amose-hb__benefit" {{ block.shopify_attributes }}>
+                  {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+                    <span class="amose-hb__icon" aria-hidden="true">
+                      <i class="ph ph-{{ block.settings.icon }}"></i>
+                    </span>
+                  {% endif %}
+                  <span>{{ block.settings.text }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if s.button_label != blank %}
+          <a class="amose-hb__cta" href="{{ s.button_link | default: '#' }}">
+            <span>{{ s.button_label }}</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var sectionRoot = document.getElementById("shopify-section-{{ section.id }}");
+    if (!sectionRoot) return;
+    var hero = sectionRoot.querySelector(".amose-hb");
+    if (!hero) return;
+    var reveal = function () {
+      var kickers = hero.querySelectorAll("[data-amose-hb-kicker]");
+      kickers.forEach(function (kicker) {
+        kicker.style.opacity = "";
+        kicker.style.visibility = "";
+      });
+      hero.classList.remove("is-pending");
+      hero.classList.add("is-ready");
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", reveal, { once: true });
+    } else {
+      reveal();
+    }
+  })();
+</script>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "hero-benefits"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Hero with benefits",
+  "tag": "section",
+  "class": "amose-hero-benefits-root",
+  "settings": [
+    { "type": "range", "id": "max_width", "label": "Max width", "min": 980, "max": 1600, "step": 20, "default": 1200, "unit": "px" },
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "4.7/5 | Viral Product" },
+    {
+      "type": "select",
+      "id": "rating_style",
+      "label": "Rating style",
+      "default": "normal",
+      "options": [
+        { "value": "normal", "label": "Normal stars" },
+        { "value": "trustpilot", "label": "Trustpilot-style stars" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_stars_image",
+      "label": "Trustpilot stars image URL",
+      "info": "Leave blank to use the default Trustpilot stars image."
+    },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Essence of Irresistible Presence" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "A sophisticated blend crafted to captivate." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Unlock your signature scent" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "default": "image-left",
+      "options": [
+        { "value": "image-left", "label": "Image left, content right" },
+        { "value": "content-left", "label": "Content left, image right" }
+      ]
+    },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1f1545" },
+    { "type": "color", "id": "muted_text_color", "label": "Muted text", "default": "#46396a" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#5f46af" },
+    { "type": "color", "id": "star_color", "label": "Star color", "default": "#5f46af" },
+    { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#1f1545" },
+    { "type": "color", "id": "icon_bg_color", "label": "Icon background", "default": "rgba(0,0,0,0)" },
+    { "type": "color", "id": "button_bg", "label": "Button background", "default": "#e8d4ff" },
+    { "type": "color", "id": "button_text_color", "label": "Button text color", "default": "#221549" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 100, "step": 1, "default": 5, "unit": "px" },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 120, "step": 4, "default": 40, "unit": "px" }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "sparkle",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "drop-simple", "label": "Drop simple" },
+            { "value": "eyedropper-sample", "label": "Eyedropper sample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "Hand heart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "Star four" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "shield-check", "label": "Shield check" },
+            { "value": "rocket-launch", "label": "Rocket" },
+            { "value": "seal-check", "label": "Seal check" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "Check circle" },
+            { "value": "drop-slash", "label": "Drop slash" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "hands-clapping", "label": "Hands clapping" },
+            { "value": "magic-wand", "label": "Magic wand" },
+            { "value": "push-pin", "label": "Push pin" },
+            { "value": "scan-smiley", "label": "Scan smiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "shooting-star", "label": "Shooting star" },
+            { "value": "smiley-sticker", "label": "Smiley sticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "x-circle", "label": "X circle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "Spray bottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shirt-folded", "label": "Shirt folded" },
+            { "value": "security-camera", "label": "Security camera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "Plus circle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "Paw print" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "Paint brush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" }
+          ]
+        },
+        { "type": "text", "id": "text", "label": "Text", "default": "Boost your social battery and magnetic pull" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero with benefits",
+      "blocks": [{ "type": "benefit" }, { "type": "benefit" }, { "type": "benefit" }]
+    }
+  ]
+}
+{% endschema %}

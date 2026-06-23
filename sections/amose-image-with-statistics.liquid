@@ -1,0 +1,676 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  .section-{{ section.id }}-padding {
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    --bg-color: {{ s.bg_color }};
+    --text-color: {{ s.text_color }};
+    --amose-stats-divider: {{ s.divider_color }};
+    --amose-stats-media-radius: {{ s.media_radius }}px;
+    --amose-stats-media-aspect: {{ s.media_aspect_ratio }};
+    --amose-stats-ring: 64px;
+    --amose-heading: clamp(22px, 2.5vw, 30px);
+    --amose-body: clamp(14px, 1.2vw, 16px);
+    --amose-lh-heading: 1.15;
+    --amose-lh-body: 1.55;
+    background: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .section-{{ section.id }}-video-with-text {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+  }
+
+  #shopify-section-{{ section.id }} .page-width {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  /* Two-column layout aligned with other Amose sections */
+  #shopify-section-{{ section.id }} .pro_vid_img_row {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: clamp(24px, 5vw, 40px);
+    width: 100%;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .page-width {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .pro_vid_img_row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} .pro_vid_img_row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(32px, 5vw, 64px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_row .vid_img_box {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    position: relative;
+    border-radius: var(--amose-stats-media-radius);
+    overflow: hidden;
+    aspect-ratio: var(--amose-stats-media-aspect);
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  #shopify-section-{{ section.id }} .video-with-text-img {
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_row .text_box {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-stats__intro {
+    margin-bottom: clamp(8px, 2vw, 14px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-stats__intro h1,
+  #shopify-section-{{ section.id }} .amose-stats__intro h2,
+  #shopify-section-{{ section.id }} .amose-stats__intro h3,
+  #shopify-section-{{ section.id }} .amose-stats__intro p {
+    font-size: var(--amose-heading);
+    line-height: var(--amose-lh-heading);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-stats__intro p + p {
+    margin-top: 0.5em;
+  }
+
+  #shopify-section-{{ section.id }} .pro_icon_text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: clamp(12px, 2vw, 18px);
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .item {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2.5vw, 18px);
+    padding: clamp(14px, 2.5vw, 18px) 0;
+    border-bottom: 1px solid var(--amose-stats-divider);
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .text_box .item .text,
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .text_box .item .text p {
+    max-width: 100%;
+    margin: 0;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+  }
+
+  #shopify-section-{{ section.id }} .amose-stats__note {
+    margin-top: clamp(12px, 2vw, 20px);
+  }
+
+  #shopify-section-{{ section.id }} .b-product-card__benefits-asterisk.rte,
+  #shopify-section-{{ section.id }} .b-product-card__benefits-asterisk.rte p {
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .video_sound_button {
+    position: absolute;
+    bottom: clamp(12px, 3vw, 20px);
+    right: clamp(12px, 3vw, 20px);
+    background: #fff;
+    display: flex;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+    z-index: 2;
+    border: 0;
+  }
+
+  #shopify-section-{{ section.id }} .video_sound_button.muted::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 1.5px;
+    background: #000;
+    content: "";
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  #shopify-section-{{ section.id }} .vid_img_box iframe {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .vid_img_box video {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: block;
+    object-fit: cover;
+  }
+
+  @keyframes amose-progress-{{ section.id }} {
+    0% {
+      --percentage: 0;
+    }
+    100% {
+      --percentage: var(--value);
+    }
+  }
+
+  @property --percentage {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+
+  #shopify-section-{{ section.id }} .pro_vid_img_sec .text_box .icon_progress {
+    width: var(--amose-stats-ring);
+    height: var(--amose-stats-ring);
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} [role="progressbar"] {
+    --percentage: 0;
+    --stats-i: 0;
+    --primary: #7069bc;
+    --secondary: #e3d2fd;
+    width: var(--amose-stats-ring);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    animation: none;
+  }
+
+  #shopify-section-{{ section.id }}.amose-stats--in-view [role="progressbar"] {
+    animation: amose-progress-{{ section.id }} 1.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(0.08s + var(--stats-i) * 0.14s);
+  }
+
+  #shopify-section-{{ section.id }} [role="progressbar"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(var(--primary) calc(var(--percentage) * 1%), var(--secondary) 0);
+    mask: radial-gradient(white 55%, transparent 0);
+    mask-mode: alpha;
+    -webkit-mask: radial-gradient(#0000 55%, #000 0);
+    -webkit-mask-mode: alpha;
+  }
+
+  #shopify-section-{{ section.id }} [role="progressbar"]::after {
+    content: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-stats__value {
+    position: relative;
+    z-index: 1;
+    font-family: inherit;
+    font-size: clamp(13px, 2.8vw, 16px);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  #shopify-section-{{ section.id }} .icon_progress {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #shopify-section-{{ section.id }} .section-{{ section.id }}-video-with-text [role="progressbar"]::before {
+    background: conic-gradient(
+      {{ s.primary_color }} calc(var(--percentage) * 1%),
+      {{ s.secondary_color }} 0
+    );
+  }
+
+  #shopify-section-{{ section.id }} .section-{{ section.id }}-video-with-text .amose-stats__value {
+    color: {{ s.primary_color }};
+  }
+
+  @media screen and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .section-{{ section.id }}-padding {
+      --amose-stats-ring: clamp(52px, 15vw, 60px);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .b-product-card__benefits-asterisk {
+      text-align: center;
+    }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<section class="pro_vid_img_sec section-{{ section.id }}-padding section-{{ section.id }}-video-with-text">
+  <div class="page-width">
+    <div class="pro_vid_img_row">
+      <div class="vid_img_box">
+        {% if section.settings.video_url != blank %}
+          <video
+            class="amose-stats-video"
+            autoplay
+            loop
+            muted
+            playsinline
+            controlslist="nodownload"
+            src="{{ section.settings.video_url }}"
+          ></video>
+          <button
+            type="button"
+            class="video_sound_button muted"
+            aria-label="Toggle video sound"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none" aria-hidden="true">
+              <path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        {% elsif section.settings.photo != blank %}
+          <img
+            class="video-with-text-img"
+            src="{{ section.settings.photo | image_url: width: 1200 }}"
+            alt="{{ section.settings.photo.alt | escape }}"
+            width="{{ section.settings.photo.width }}"
+            height="{{ section.settings.photo.height }}"
+            loading="lazy"
+          >
+        {% endif %}
+
+      </div>
+
+      <div class="text_box">
+        <div class="rte amose-stats__intro">{{ section.settings.heading_text_block }}</div>
+        <div class="pro_icon_text amose-stats__bars" data-amose-stats-anchor>
+          {% for block in section.blocks %}
+            {% assign bar_percent = block.settings.bar_no | default: 89 | at_least: 86 | at_most: 100 %}
+            <div class="item" {{ block.shopify_attributes }}>
+              <div class="progress_icn">
+                <div
+                  class="icon_progress"
+                  role="progressbar"
+                  aria-valuenow="{{ bar_percent }}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="--value: {{ bar_percent }}; --stats-i: {{ forloop.index0 }}"
+                >
+                  <span class="amose-stats__value" aria-hidden="true">0%</span>
+                </div>
+              </div>
+              <div class="text rte">{{ block.settings.bar_des }}</div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if section.settings.pre_btn != blank %}
+          <div class="b-product-card__benefits-asterisk amose-stats__note rte">{{ section.settings.pre_btn }}</div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById("shopify-section-{{ section.id }}");
+    if (!root) return;
+
+    var video = root.querySelector(".amose-stats-video");
+    var soundButton = root.querySelector(".video_sound_button");
+    if (video && soundButton) {
+      function toggleMute() {
+        if (video.muted) {
+          video.play().catch(function () {});
+          video.muted = false;
+          soundButton.classList.remove("muted");
+        } else {
+          video.muted = true;
+          soundButton.classList.add("muted");
+        }
+      }
+      soundButton.addEventListener("click", toggleMute);
+    }
+
+    var bars = root.querySelectorAll('[role="progressbar"]');
+    if (!bars.length) return;
+
+    var anchor = root.querySelector("[data-amose-stats-anchor]") || root.querySelector(".text_box") || root;
+    var revealed = false;
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function setBarLabel(bar, value) {
+      var label = bar.querySelector(".amose-stats__value");
+      if (label) label.textContent = Math.round(value) + "%";
+      bar.setAttribute("aria-valuenow", String(Math.round(value)));
+    }
+
+    function runCountUps() {
+      var duration = 1850;
+      bars.forEach(function (bar) {
+        var target = parseFloat(bar.style.getPropertyValue("--value"));
+        if (!Number.isFinite(target)) target = parseInt(bar.getAttribute("aria-valuenow"), 10) || 0;
+        var delayMs = 80 + parseInt(bar.style.getPropertyValue("--stats-i") || "0", 10) * 140;
+        var label = bar.querySelector(".amose-stats__value");
+        if (!label) return;
+        setBarLabel(bar, 0);
+        window.setTimeout(function () {
+          var start = performance.now();
+          function tick(now) {
+            var elapsed = now - start;
+            var t = Math.min(elapsed / duration, 1);
+            var v = target * easeOutCubic(t);
+            setBarLabel(bar, v);
+            if (t < 1) requestAnimationFrame(tick);
+            else setBarLabel(bar, target);
+          }
+          requestAnimationFrame(tick);
+        }, delayMs);
+      });
+    }
+
+    function revealStats() {
+      if (revealed) return;
+      revealed = true;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          root.classList.add("amose-stats--in-view");
+          runCountUps();
+        });
+      });
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      revealStats();
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.classList.add("amose-stats--in-view");
+      bars.forEach(function (bar) {
+        var target = parseFloat(bar.style.getPropertyValue("--value"));
+        if (!Number.isFinite(target)) target = parseInt(bar.getAttribute("aria-valuenow"), 10) || 0;
+        setBarLabel(bar, target);
+      });
+      return;
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            revealStats();
+            observer.disconnect();
+            return;
+          }
+        }
+      },
+      { root: null, rootMargin: "0px 0px 0px 0px", threshold: 0.18 }
+    );
+
+    observer.observe(anchor);
+  })();
+</script>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "image-with-statistics"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Amose Image with stats",
+  "tag": "section",
+  "class": "amose-image-with-statistics",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "media_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Image & video corner radius",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "media_aspect_ratio",
+      "label": "Image shape (desktop)",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "4 / 3", "label": "Landscape" }
+      ],
+      "default": "4 / 3"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "default": "#ffffff",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "default": "#000000",
+      "label": "Text color"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "default": "#0077A7",
+      "label": "Progress ring (primary)"
+    },
+    {
+      "type": "color",
+      "id": "secondary_color",
+      "default": "#68D4FF",
+      "label": "Progress ring (secondary)"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "default": "#e8e8e8",
+      "label": "Statistic row dividers"
+    },
+    {
+      "type": "header",
+      "content": "Video or image"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "MP4 video URL",
+      "info": "Direct link to an MP4 file. Recommended ~1080×1080."
+    },
+    {
+      "type": "image_picker",
+      "id": "photo",
+      "label": "Image (if no video)"
+    },
+    {
+      "type": "richtext",
+      "id": "heading_text_block",
+      "default": "<p>Clinically inspired.</p>",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "pre_btn",
+      "default": "<p>* Results according to clinical/consumer studies.</p>",
+      "label": "Text before button"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bar",
+      "name": "Statistic",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "bar_des",
+          "default": "<p>Said the appearance of their skin improved.</p>",
+          "label": "Description"
+        },
+        {
+          "type": "range",
+          "id": "bar_no",
+          "min": 86,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Percentage",
+          "default": 89
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Amose Image with stats",
+      "blocks": [
+        { "type": "bar" },
+        { "type": "bar" },
+        { "type": "bar" }
+      ]
+    }
+  ]
+}
+{% endschema %}

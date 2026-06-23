@@ -1,0 +1,238 @@
+{% comment %} Current section style {% endcomment %}
+{{ 'tpt-trust-badges-1.css' | asset_url | stylesheet_tag }}
+
+
+{% assign original = section.settings.target %}
+{% assign converted = original | replace: "-target", "-template" %}
+
+{% style %}
+  .{{ converted }}.tpt-trust-badges-1{
+    --badge-gap: {{ section.settings.badge_gap }}px;
+    --badge-padding: {{ section.settings.badge_padding }}px;
+    --badge-border-radius: {{ section.settings.badge_border_radius }}px;
+    --icon-size: {{ section.settings.icon_size }}px;
+    --font-size: {{ section.settings.font_size }}px;
+    --text-color: {{ section.settings.text_color }};
+    --columns: {{ section.settings.columns }};
+  }
+{% endstyle %}
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    {% comment %} const template = document.querySelector('[{{ converted }}]');
+    const target = document.querySelector('[{{ original }}]'); {% endcomment %}
+    const template = document.getElementById('{{ converted }}');
+    const target = document.getElementById('{{ original }}');
+    if (target && template) {
+      target.appendChild(template.content.cloneNode(true));
+    }
+  });
+</script>
+
+<template id="{{ converted }}">
+  <div class="tpt-trust-badges-1 {{ converted }} tpt-trust-badges-1--{{ section.settings.columns }}-columns">
+    <div class="tpt-trust-badges-1_container">
+      {%- for block in section.blocks -%}
+        <div class="tpt-trust-badges-1_item">
+          {%- if block.settings.badge_url != blank -%}
+            <a href="{{ block.settings.badge_url }}" class="tpt-trust-badges-1_link"
+              {%- assign mtm_link = block.settings.badge_url -%}
+              {%- if mtm_link contains 'http' -%}
+                {% unless mtm_link contains shop.domain %} rel="nofollow" {% endunless %}
+              {%- endif -%}
+            >
+          {%- endif -%}
+          
+          <div class="tpt-trust-badges-1_content">
+            {%- if block.settings.badge_icon != blank -%}
+              <div class="tpt-trust-badges-1_icon">
+                {%- assign image_alt = block.settings.badge_icon.alt | default: block.settings.badge_label -%}
+                {{
+                  block.settings.badge_icon
+                  | image_url: width: 120
+                  | image_tag: alt: image_alt, loading: 'lazy'
+                }}
+              </div>
+            {%- endif -%}
+            
+            {%- if block.settings.badge_label != blank -%}
+              <div class="tpt-trust-badges-1_label">
+                {{ block.settings.badge_label }}
+              </div>
+            {%- endif -%}
+          </div>
+          
+          {%- if block.settings.badge_url != blank -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</template>
+{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}
+
+
+{% schema %}
+{
+  "name": "TptBLK-Trust Badges #1",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Target"
+    },
+    {
+      "type": "textarea",
+      "id": "target",
+      "label": "Target",
+      "default": "data-tpt-trust-badges-1-target",
+      "info": "Copy this code into the target area where you want to display the trust badges."
+    },
+    {
+      "type": "header",
+      "content": "Layout settings"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Number of columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        },
+        {
+          "value": "4",
+          "label": "4 columns"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "Badge settings"
+    },
+    {
+      "type": "range",
+      "id": "badge_gap",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between badges",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "badge_padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Badge padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Badge border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "badge_icon",
+          "label": "Badge icon"
+        },
+        {
+          "type": "text",
+          "id": "badge_label",
+          "label": "Badge label",
+          "default": "Lifetime Guarantee"
+        },
+        {
+          "type": "url",
+          "id": "badge_url",
+          "label": "Badge link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TptBLK-Trust Badges #1",
+      "category": "Tpt block",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "badge_label": "Tested for High Heat"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "badge_label": "Safe & Certified"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "badge_label": "Easy to Clean"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "badge_label": "Built to Last"
+          }
+        }
+      ]
+    }
+  ]
+} 
+{% endschema %}

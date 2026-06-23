@@ -1,0 +1,294 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-reviews-image-root {
+    --ari-bg: {{ s.section_bg }};
+    --ari-text: {{ s.text_color }};
+    --ari-muted: {{ s.muted_text_color }};
+    --ari-star: {{ s.star_color }};
+    --ari-card-radius: {{ s.card_radius }}px;
+    --ari-gap: {{ s.card_gap }}px;
+    --ari-heading: clamp(22px, 2.5vw, 30px);
+    --ari-body: clamp(14px, 1.2vw, 16px);
+    --ari-aspect: {{ s.image_aspect_ratio }};
+    background: var(--ari-bg);
+    color: var(--ari-text);
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-reviews-image-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding-left: clamp(16px, 4vw, 40px);
+    padding-right: 0;
+  }
+
+  @media (min-width: 750px) {
+    #shopify-section-{{ section.id }} .amose-ari__wrap {
+      padding-right: clamp(16px, 4vw, 40px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__header {
+    display: grid;
+    gap: 10px;
+    margin-bottom: clamp(16px, 2.4vw, 26px);
+  }
+
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-ari__header {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: end;
+      gap: 18px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__heading {
+    margin: 0;
+    font-size: var(--ari-heading);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    text-transform: lowercase;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__heading::first-letter {
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__sub {
+    margin: 0;
+    color: var(--ari-muted);
+    font-size: var(--ari-body);
+    line-height: 1.55;
+  }
+
+  @media (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-ari__sub {
+      text-align: right;
+      justify-self: end;
+      max-width: 40ch;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 1fr);
+    gap: var(--ari-gap);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__card {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__image-wrap {
+    border-radius: var(--ari-card-radius);
+    overflow: hidden;
+    aspect-ratio: var(--ari-aspect);
+    background: #e5e7eb;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__stars {
+    margin-top: 12px;
+    display: inline-flex;
+    gap: 2px;
+    color: var(--ari-star);
+    line-height: 1;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__stars svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__quote {
+    margin: 8px 0 0;
+    color: var(--ari-muted);
+    font-size: clamp(14px, 1.15vw, 18px);
+    line-height: 1.45;
+  }
+
+  #shopify-section-{{ section.id }} .amose-ari__author {
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<section class="amose-ari__wrap">
+  <header class="amose-ari__header">
+    <h2 class="amose-ari__heading">{{ s.heading | escape }}</h2>
+    {% if s.subheading != blank %}
+      <p class="amose-ari__sub">{{ s.subheading | escape }}</p>
+    {% endif %}
+  </header>
+
+  <div class="amose-ari__rail">
+    {% for block in section.blocks %}
+      <article class="amose-ari__card" {{ block.shopify_attributes }}>
+        <div class="amose-ari__image-wrap">
+          {% if block.settings.image != blank %}
+            <img
+              src="{{ block.settings.image | image_url: width: 1000 }}"
+              alt="{{ block.settings.author | default: 'Customer review' | escape }}"
+              loading="lazy"
+              width="{{ block.settings.image.width }}"
+              height="{{ block.settings.image.height }}"
+            >
+          {% else %}
+            <div style="width:100%;height:100%;background:#d1d5db;"></div>
+          {% endif %}
+        </div>
+        <div class="amose-ari__stars" aria-label="{{ block.settings.rating | default: 5 }} out of 5 stars">
+          {% for i in (1..5) %}
+            <svg
+              viewBox="0 0 24 24"
+              role="presentation"
+              focusable="false"
+              style="{% if i > block.settings.rating %}opacity:.25;{% endif %}"
+            >
+              <path d="M12 2l2.9 6.6L22 9.2l-5 4.9 1.2 7L12 17.8 5.8 21l1.2-7-5-4.9 7.1-0.6z"></path>
+            </svg>
+          {% endfor %}
+        </div>
+        {% if block.settings.quote != blank %}
+          <p class="amose-ari__quote">{{ block.settings.quote | escape }}</p>
+        {% endif %}
+        {% if block.settings.author != blank %}
+          <p class="amose-ari__author">- {{ block.settings.author | escape }}</p>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "reviews-with-image"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Reviews with image",
+  "tag": "section",
+  "class": "amose-reviews-image-root",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "range", "id": "max_width", "min": 960, "max": 1600, "step": 20, "unit": "px", "label": "Max width", "default": 1320 },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "you + us" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Your favorite glazed skin essentials in the us kit." },
+    { "type": "color", "id": "section_bg", "label": "Section background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Heading color", "default": "#4b5563" },
+    { "type": "color", "id": "muted_text_color", "label": "Subheading/body color", "default": "#5c5f62" },
+    { "type": "color", "id": "star_color", "label": "Star color", "default": "#171717" },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image format",
+      "default": "1 / 1",
+      "options": [
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 5", "label": "Portrait (4:5)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "2 / 3", "label": "Portrait (2:3)" },
+        { "value": "9 / 16", "label": "Vertical (9:16)" },
+        { "value": "16 / 9", "label": "Landscape (16:9)" }
+      ]
+    },
+    { "type": "range", "id": "card_radius", "min": 0, "max": 30, "step": 1, "unit": "px", "label": "Card corner radius", "default": 12 },
+    { "type": "range", "id": "card_gap", "min": 6, "max": 30, "step": 1, "unit": "px", "label": "Card gap", "default": 16 },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding top", "default": 28 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding bottom", "default": 28 }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "range", "id": "rating", "label": "Rating", "min": 1, "max": 5, "step": 1, "default": 5 },
+        { "type": "textarea", "id": "quote", "label": "Review text", "default": "I've been getting so many compliments on my skin. In love." },
+        { "type": "text", "id": "author", "label": "Author line", "default": "SYMONE K <3 GLAZE" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews with image",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}

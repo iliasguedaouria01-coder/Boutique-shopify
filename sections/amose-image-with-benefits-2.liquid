@@ -1,0 +1,811 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign lc = 0
+  assign rc = 0
+  for block in section.blocks
+    if block.type == 'point'
+      if block.settings.side == 'left'
+        assign lc = lc | plus: 1
+      elsif block.settings.side == 'right'
+        assign rc = rc | plus: 1
+      endif
+    endif
+  endfor
+  assign row_count = lc
+  if rc > row_count
+    assign row_count = rc
+  endif
+  if row_count < 1
+    assign row_count = 1
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }}.amose-iwb2-root {
+    --amose-section-heading: clamp(22px, 2.5vw, 30px);
+    --amose-section-heading-lh: 1.15;
+    --amose-iwb2-title: var(--amose-section-heading);
+    --amose-iwb2-point-title: clamp(16px, 1.35vw, 18px);
+    --amose-iwb2-body: clamp(13px, 1.1vw, 15px);
+    --amose-iwb2-lh-tight: 1.2;
+    --amose-iwb2-lh-body: 1.5;
+    --amose-iwb2-bg: {{ s.section_bg }};
+    --amose-iwb2-text: {{ s.text_color }};
+    --amose-iwb2-muted: {{ s.muted_text_color }};
+    --amose-iwb2-radius: {{ s.image_radius }}px;
+    --amose-iwb2-icon-bg: {{ s.icon_bg }};
+    --amose-iwb2-icon-fg: {{ s.icon_color }};
+    --amose-iwb2-overlap: {{ s.icon_overlap }}px;
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    background: var(--amose-iwb2-bg);
+    color: var(--amose-iwb2-text);
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-iwb2-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb2__wrap {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__intro {
+    margin-bottom: clamp(28px, 4vw, 48px);
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__intro .amose-iwb2__title {
+    margin: 0 0 clamp(10px, 1.5vw, 16px);
+    font-size: var(--amose-iwb2-title);
+    font-weight: 700;
+    line-height: var(--amose-section-heading-lh);
+    letter-spacing: -0.02em;
+    color: var(--amose-iwb2-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__intro .amose-iwb2__title:last-child {
+    margin-bottom: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__subtitle {
+    margin: 0 auto;
+    max-width: 672px;
+    font-size: clamp(15px, 1.15vw, 17px);
+    font-weight: 400;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    color: var(--amose-iwb2-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(200px, {{ s.image_column_max }}px) minmax(0, 1fr);
+    grid-template-rows: repeat({{ row_count }}, auto);
+    align-items: center;
+    column-gap: clamp(4px, 1.5vw, 12px);
+    row-gap: clamp(16px, 3vw, 36px);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__media {
+    grid-column: 2;
+    grid-row: 1 / span {{ row_count }};
+    border-radius: var(--amose-iwb2-radius);
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: {{ s.image_column_max }}px;
+    margin: 0 auto;
+    justify-self: center;
+    align-self: center;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    vertical-align: middle;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__media .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    object-fit: cover;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point--left {
+    grid-column: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point--right {
+    grid-column: 3;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-text--left {
+    text-align: right;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-text--right {
+    text-align: left;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-title {
+    margin: 0 0 6px;
+    font-size: var(--amose-iwb2-point-title);
+    font-weight: 700;
+    line-height: var(--amose-iwb2-lh-tight);
+    color: var(--amose-iwb2-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-body,
+  #shopify-section-{{ section.id }} .amose-iwb2__point-body p {
+    margin: 0;
+    font-size: var(--amose-iwb2-body);
+    line-height: var(--amose-iwb2-lh-body);
+    font-weight: 400;
+    color: var(--amose-iwb2-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-body p + p {
+    margin-top: 0.5em;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-icon {
+    flex-shrink: 0;
+    width: {{ s.icon_size }}px;
+    height: {{ s.icon_size }}px;
+    border-radius: 50%;
+    background: var(--amose-iwb2-icon-bg);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+    display: grid;
+    place-items: center;
+    z-index: 2;
+    position: relative;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point--left .amose-iwb2__point-icon {
+    margin-right: calc(-1 * var(--amose-iwb2-overlap));
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point--right .amose-iwb2__point-icon {
+    margin-left: calc(-1 * var(--amose-iwb2-overlap));
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-icon img {
+    width: 55%;
+    height: 55%;
+    object-fit: contain;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-icon .amose-iwb2__pinwheel {
+    width: 58%;
+    height: 58%;
+    color: var(--amose-iwb2-icon-fg);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb2__point-icon .amose-iwb2__phosphor-icon {
+    font-size: 140%;
+    line-height: 1;
+    display: inline-block;
+    color: var(--amose-iwb2-icon-fg);
+  }
+
+  @media screen and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb2__title {
+      margin-bottom: clamp(20px, 5vw, 28px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      grid-template-columns: none;
+      grid-template-rows: none;
+      gap: clamp(22px, 5vw, 34px);
+    }
+
+    /* Left-column benefits first, then image, then right-column benefits */
+    #shopify-section-{{ section.id }} .amose-iwb2__point--left {
+      order: 1;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__media {
+      grid-column: auto;
+      grid-row: auto;
+      order: 2;
+      width: 100%;
+      max-width: min(100%, 420px);
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: clamp(6px, 2vw, 14px);
+      margin-bottom: clamp(6px, 2vw, 14px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--right {
+      order: 3;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-start;
+      text-align: left;
+      gap: 14px;
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--left,
+    #shopify-section-{{ section.id }} .amose-iwb2__point--right {
+      grid-column: auto;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--left .amose-iwb2__point-icon,
+    #shopify-section-{{ section.id }} .amose-iwb2__point--right .amose-iwb2__point-icon {
+      margin-left: 0;
+      margin-right: 0;
+      order: -1;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point-text--left,
+    #shopify-section-{{ section.id }} .amose-iwb2__point-text--right {
+      text-align: left;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point-title {
+      margin-bottom: 8px;
+    }
+  }
+
+  /* Keep tablet behavior aligned with desktop layout. */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb2__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(200px, {{ s.image_column_max }}px) minmax(0, 1fr);
+      grid-template-rows: repeat({{ row_count }}, auto);
+      align-items: center;
+      column-gap: clamp(4px, 1.5vw, 12px);
+      row-gap: clamp(16px, 3vw, 36px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--left {
+      order: initial;
+      grid-column: 1;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--right {
+      order: initial;
+      grid-column: 3;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--left .amose-iwb2__point-icon {
+      margin-right: calc(-1 * var(--amose-iwb2-overlap));
+      margin-left: 0;
+      order: initial;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point--right .amose-iwb2__point-icon {
+      margin-left: calc(-1 * var(--amose-iwb2-overlap));
+      margin-right: 0;
+      order: initial;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point-text--left {
+      text-align: right;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__point-text--right {
+      text-align: left;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb2__media {
+      order: initial;
+      grid-column: 2;
+      grid-row: 1 / span {{ row_count }};
+      width: 100%;
+      max-width: {{ s.image_column_max }}px;
+      margin: 0 auto;
+    }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<div class="amose-iwb2__wrap">
+  {% if s.heading != blank or s.subtitle != blank %}
+    <div class="amose-iwb2__intro">
+      {% if s.heading != blank %}
+        <h2 class="amose-iwb2__title">{{ s.heading | escape }}</h2>
+      {% endif %}
+      {% if s.subtitle != blank %}
+        <div class="amose-iwb2__subtitle rte">{{ s.subtitle | escape | newline_to_br }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="amose-iwb2__grid">
+    {%- assign left_i = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'point' and block.settings.side == 'left' -%}
+        {%- assign left_i = left_i | plus: 1 -%}
+        <div
+          class="amose-iwb2__point amose-iwb2__point--left"
+          style="grid-row: {{ left_i }};"
+          {{ block.shopify_attributes }}
+        >
+          <div class="amose-iwb2__point-text amose-iwb2__point-text--left">
+            {% if block.settings.title != blank %}
+              <h3 class="amose-iwb2__point-title">{{ block.settings.title | escape }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <div class="amose-iwb2__point-body rte">{{ block.settings.text }}</div>
+            {% endif %}
+          </div>
+          <div class="amose-iwb2__point-icon">
+            {% if block.settings.icon != blank %}
+              <img
+                src="{{ block.settings.icon | image_url: width: 96 }}"
+                alt=""
+                width="48"
+                height="48"
+                loading="lazy"
+              >
+            {% elsif block.settings.phosphor_icon != blank and block.settings.phosphor_icon != 'none' %}
+              <i class="ph ph-{{ block.settings.phosphor_icon }} amose-iwb2__phosphor-icon" aria-hidden="true"></i>
+            {% elsif s.default_icon != blank %}
+              <img
+                src="{{ s.default_icon | image_url: width: 96 }}"
+                alt=""
+                width="48"
+                height="48"
+                loading="lazy"
+              >
+            {% else %}
+              <svg class="amose-iwb2__pinwheel" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="2.2" fill="currentColor"></circle>
+                <path d="M12 3.5v4.5M12 16v4.5M3.5 12h4.5M16 12h4.5M6 6l3.2 3.2M14.8 14.8L18 18M18 6l-3.2 3.2M6 18l3.2-3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+              </svg>
+            {% endif %}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <div class="amose-iwb2__media">
+      {% if s.image != blank %}
+        <img
+          src="{{ s.image | image_url: width: 1200 }}"
+          alt="{{ s.image.alt | default: s.heading | escape }}"
+          width="{{ s.image.width }}"
+          height="{{ s.image.height }}"
+          loading="lazy"
+        >
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+
+    {%- assign right_i = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'point' and block.settings.side == 'right' -%}
+        {%- assign right_i = right_i | plus: 1 -%}
+        <div
+          class="amose-iwb2__point amose-iwb2__point--right"
+          style="grid-row: {{ right_i }};"
+          {{ block.shopify_attributes }}
+        >
+          <div class="amose-iwb2__point-text amose-iwb2__point-text--right">
+            {% if block.settings.title != blank %}
+              <h3 class="amose-iwb2__point-title">{{ block.settings.title | escape }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <div class="amose-iwb2__point-body rte">{{ block.settings.text }}</div>
+            {% endif %}
+          </div>
+          <div class="amose-iwb2__point-icon">
+            {% if block.settings.icon != blank %}
+              <img
+                src="{{ block.settings.icon | image_url: width: 96 }}"
+                alt=""
+                width="48"
+                height="48"
+                loading="lazy"
+              >
+            {% elsif block.settings.phosphor_icon != blank and block.settings.phosphor_icon != 'none' %}
+              <i class="ph ph-{{ block.settings.phosphor_icon }} amose-iwb2__phosphor-icon" aria-hidden="true"></i>
+            {% elsif s.default_icon != blank %}
+              <img
+                src="{{ s.default_icon | image_url: width: 96 }}"
+                alt=""
+                width="48"
+                height="48"
+                loading="lazy"
+              >
+            {% else %}
+              <svg class="amose-iwb2__pinwheel" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="2.2" fill="currentColor"></circle>
+                <path d="M12 3.5v4.5M12 16v4.5M3.5 12h4.5M16 12h4.5M6 6l3.2 3.2M14.8 14.8L18 18M18 6l-3.2 3.2M6 18l3.2-3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+              </svg>
+            {% endif %}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "image-with-benefits-2"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Amose benefits img 2",
+  "tag": "section",
+  "class": "amose-iwb2-root",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "image_column_max",
+      "min": 240,
+      "max": 520,
+      "step": 10,
+      "unit": "px",
+      "label": "Image max width",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 32,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon circle size",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "icon_overlap",
+      "min": 0,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon overlap on image",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Headings",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Body text",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon circle background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Default icon (SVG) color",
+      "default": "#111111"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Ultimate Showering Experience"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "info": "Intro under the heading: Amose AI uses at most 150 characters. Optional line break for a second line. Clear to hide."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Center image"
+    },
+    {
+      "type": "image_picker",
+      "id": "default_icon",
+      "label": "Default marker icon (optional)",
+      "info": "Used when a block has no custom icon. Falls back to built-in mark."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Benefit point",
+      "settings": [
+        {
+          "type": "select",
+          "id": "side",
+          "label": "Side",
+          "options": [
+            { "value": "left", "label": "Left of image" },
+            { "value": "right", "label": "Right of image" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Benefit title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Short supporting copy that explains this benefit.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Custom icon (optional)"
+        },
+        {
+          "type": "select",
+          "id": "phosphor_icon",
+          "label": "Phosphor icon",
+          "default": "drop-simple",
+          "options": [
+            { "value": "drop-simple", "label": "DropSimple" },
+            { "value": "eyedropper-sample", "label": "EyedropperSample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "HandHeart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "StarFour" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "CheckCircle" },
+            { "value": "drop-slash", "label": "DropSlash" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "hands-clapping", "label": "HandsClapping" },
+            { "value": "magic-wand", "label": "MagicWand" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "push-pin", "label": "PushPin" },
+            { "value": "rocket-launch", "label": "RocketLaunch" },
+            { "value": "scan-smiley", "label": "ScanSmiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "seal-check", "label": "SealCheck" },
+            { "value": "shield-check", "label": "ShieldCheck" },
+            { "value": "shooting-star", "label": "ShootingStar" },
+            { "value": "smiley-sticker", "label": "SmileySticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "x-circle", "label": "XCircle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "SprayBottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "shirt-folded", "label": "ShirtFolded" },
+            { "value": "security-camera", "label": "SecurityCamera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "PlusCircle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "PawPrint" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "PaintBrush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "none", "label": "None" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Amose benefits img 2",
+      "blocks": [
+        {
+          "type": "point",
+          "settings": {
+            "side": "left",
+            "title": "Removes Chlorine & Impurities",
+            "text": "<p>Helps filter harsh chemicals and minerals commonly found in hard water.</p>",
+            "phosphor_icon": "drop-simple"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "left",
+            "title": "Healthier Hair",
+            "text": "<p>Reduces buildup that can cause dullness, dryness, and breakage.</p>",
+            "phosphor_icon": "heart"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "left",
+            "title": "Softer Skin",
+            "text": "<p>Filtered water helps prevent dryness and irritation caused by hard water.</p>",
+            "phosphor_icon": "sparkle"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "right",
+            "title": "Stronger Hair Over Time",
+            "text": "<p>Less mineral buildup means healthier-looking hair and improved shine.</p>",
+            "phosphor_icon": "shield-check"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "right",
+            "title": "Improved Skin Hydration",
+            "text": "<p>Supports softer, smoother skin after every shower by reducing harsh minerals.</p>",
+            "phosphor_icon": "waves"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "side": "right",
+            "title": "Easy 60-Second Installation",
+            "text": "<p>Simply screw it onto your existing shower arm—no tools required.</p>",
+            "phosphor_icon": "rocket-launch"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

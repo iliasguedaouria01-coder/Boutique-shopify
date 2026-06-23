@@ -1,0 +1,392 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign logo_count = section.blocks.size
+  if logo_count < 1
+    assign logo_count = 1
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-scrolling-logo {
+    --sl-bg: #ffffff;
+    --sl-text: {{ s.text_color }};
+    --sl-muted: {{ s.muted_text_color }};
+    --sl-gap: {{ s.logo_gap }}px;
+    --sl-logo-height: {{ s.logo_height }}px;
+    --sl-duration: {{ s.scroll_speed }}s;
+    --sl-mobile-align: {{ s.mobile_text_align | default: 'left' }};
+    background: var(--sl-bg);
+    color: var(--sl-text);
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    overflow: hidden;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-scrolling-logo {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+    display: grid;
+    gap: clamp(16px, 2.5vw, 28px);
+    align-items: center;
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-sl__wrap {
+      grid-template-columns: minmax(210px, 280px) minmax(0, 1fr);
+      gap: clamp(20px, 3vw, 42px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__intro {
+    max-width: 280px;
+  }
+
+  @media screen and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-sl__intro {
+      width: 100%;
+      max-width: none;
+      text-align: var(--sl-mobile-align);
+    }
+
+    #shopify-section-{{ section.id }} .amose-sl__heading,
+    #shopify-section-{{ section.id }} .amose-sl__sub {
+      width: 100%;
+    }
+
+    #shopify-section-{{ section.id }} .amose-sl__wrap[data-mobile-align='center'] .amose-sl__intro {
+      justify-self: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #shopify-section-{{ section.id }} .amose-sl__wrap[data-mobile-align='right'] .amose-sl__intro {
+      justify-self: end;
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__heading {
+    margin: 0 0 8px;
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__sub {
+    margin: 0;
+    color: var(--sl-muted);
+    font-size: clamp(14px, 1.2vw, 16px);
+    line-height: 1.55;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__rail {
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__track {
+    display: flex;
+    width: max-content;
+    gap: var(--sl-gap);
+    animation: amose-scroll-logos-{{ section.id }} var(--sl-duration) linear infinite;
+    will-change: transform;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__group {
+    display: flex;
+    align-items: center;
+    gap: var(--sl-gap);
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: clamp(130px, 15vw, 200px);
+    min-height: calc(var(--sl-logo-height) + 10px);
+    opacity: 0.98;
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__item img {
+    width: auto;
+    height: auto;
+    max-width: min(220px, 22vw);
+    max-height: var(--sl-logo-height);
+    object-fit: contain;
+    display: block;
+    filter: grayscale(1) contrast(1.1);
+  }
+
+  #shopify-section-{{ section.id }} .amose-sl__fallback-logo {
+    margin: 0;
+    font-size: clamp(28px, 3.1vw, 54px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @keyframes amose-scroll-logos-{{ section.id }} {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - (var(--sl-gap) / 2)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .amose-sl__track {
+      animation: none;
+    }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<section class="amose-sl__wrap" data-mobile-align="{{ s.mobile_text_align | default: 'left' }}">
+  <div class="amose-sl__intro">
+    {% if s.heading != blank %}
+      <h2 class="amose-sl__heading">{{ s.heading | escape }}</h2>
+    {% endif %}
+    {% if s.subheading != blank %}
+      <p class="amose-sl__sub">{{ s.subheading | escape | newline_to_br }}</p>
+    {% endif %}
+  </div>
+
+  <div class="amose-sl__rail" aria-label="Scrolling publication logos">
+    <div class="amose-sl__track" role="presentation">
+      <div class="amose-sl__group">
+        {% for block in section.blocks %}
+          <div class="amose-sl__item" {{ block.shopify_attributes }}>
+            {% if block.settings.logo_image != blank %}
+              <img
+                src="{{ block.settings.logo_image | image_url: width: 500 }}"
+                alt="{{ block.settings.logo_alt | default: block.settings.logo_text | escape }}"
+                loading="lazy"
+                width="{{ block.settings.logo_image.width }}"
+                height="{{ block.settings.logo_image.height }}"
+              >
+            {% elsif block.settings.logo_text != blank %}
+              <p class="amose-sl__fallback-logo">{{ block.settings.logo_text | escape }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="amose-sl__group" aria-hidden="true">
+        {% for block in section.blocks %}
+          <div class="amose-sl__item">
+            {% if block.settings.logo_image != blank %}
+              <img
+                src="{{ block.settings.logo_image | image_url: width: 500 }}"
+                alt=""
+                loading="lazy"
+                width="{{ block.settings.logo_image.width }}"
+                height="{{ block.settings.logo_image.height }}"
+              >
+            {% elsif block.settings.logo_text != blank %}
+              <p class="amose-sl__fallback-logo">{{ block.settings.logo_text | escape }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "scrolling-logo"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Scrolling-logo",
+  "tag": "section",
+  "class": "amose-scrolling-logo",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "In The Press"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Celebrated by leading publications around the globe."
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_align",
+      "label": "Mobile heading/subheading alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Logo max height",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "logo_gap",
+      "min": 12,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between logos",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 12,
+      "max": 90,
+      "step": 1,
+      "unit": "s",
+      "label": "Scroll duration",
+      "default": 36
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading color",
+      "default": "#171717"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Subheading color",
+      "default": "#4b5563"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo_image",
+          "label": "Logo image"
+        },
+        {
+          "type": "text",
+          "id": "logo_alt",
+          "label": "Image alt text",
+          "default": "Publication logo"
+        },
+        {
+          "type": "text",
+          "id": "logo_text",
+          "label": "Fallback text",
+          "default": "VOGUE"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling-logo",
+      "blocks": [
+        { "type": "logo", "settings": { "logo_text": "VOGUE", "logo_alt": "Vogue logo" } },
+        { "type": "logo", "settings": { "logo_text": "Forbes", "logo_alt": "Forbes logo" } },
+        { "type": "logo", "settings": { "logo_text": "Women's Health", "logo_alt": "Women's Health logo" } },
+        { "type": "logo", "settings": { "logo_text": "ELLE", "logo_alt": "Elle logo" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

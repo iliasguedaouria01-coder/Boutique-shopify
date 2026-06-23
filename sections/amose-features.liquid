@@ -1,0 +1,621 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+  assign feature_count = 0
+  for block in section.blocks
+    if block.type == 'feature'
+      assign feature_count = feature_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }}.amose-features-root {
+    --amose-feat-bg: {{ s.section_bg }};
+    --amose-feat-heading: {{ s.heading_color }};
+    --amose-feat-card-bg: {{ s.card_bg }};
+    --amose-feat-card-border: {{ s.card_border_color }};
+    --amose-feat-card-border-width: {{ s.card_border_width }}px;
+    --amose-feat-card-radius: {{ s.card_radius }}px;
+    --amose-feat-card-padding: {{ s.card_padding }}px;
+    --amose-feat-media-radius: {{ s.media_radius }}px;
+    --amose-feat-tag-bg: {{ s.tag_bg }};
+    --amose-feat-tag-text: {{ s.tag_text_color }};
+    --amose-feat-title: {{ s.title_color }};
+    --amose-feat-body: {{ s.body_color }};
+    --amose-feat-heading-size: clamp(22px, 2.5vw, 30px);
+    --amose-feat-title-size: clamp(16px, 1.35vw, 18px);
+    --amose-feat-body-size: clamp(14px, 1.15vw, 16px);
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    background: var(--amose-feat-bg);
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-features-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-features {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__heading {
+    margin: 0 0 clamp(16px, 2.6vw, 24px);
+    font-size: var(--amose-feat-heading-size);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--amose-feat-heading);
+    text-align: left;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: {{ s.card_gap }}px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__dots {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-features {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(16px, 2.6vw, 24px);
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    #shopify-section-{{ section.id }} .amose-features__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: {{ s.card_gap }}px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .amose-features.is-mobile-slider {
+      padding-right: 0;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__grid.is-mobile-slider {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__grid.is-mobile-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__grid.is-mobile-slider .amose-features__card {
+      flex: 0 0 calc(100% - 28px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__dots {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0;
+      cursor: pointer;
+    }
+
+    #shopify-section-{{ section.id }} .amose-features__dot.is-active {
+      background: rgba(0, 0, 0, 0.72);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__card {
+    background: var(--amose-feat-card-bg);
+    border: var(--amose-feat-card-border-width) solid var(--amose-feat-card-border);
+    border-radius: var(--amose-feat-card-radius);
+    padding: var(--amose-feat-card-padding);
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: {{ s.image_aspect_ratio }};
+    border-radius: var(--amose-feat-media-radius);
+    overflow: hidden;
+    background: #f0f0f0;
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    vertical-align: middle;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    background: var(--amose-feat-tag-bg);
+    color: var(--amose-feat-tag-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__title {
+    margin: 0 0 10px;
+    font-size: var(--amose-feat-title-size);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--amose-feat-title);
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__body,
+  #shopify-section-{{ section.id }} .amose-features__body p {
+    margin: 0;
+    font-size: var(--amose-feat-body-size);
+    line-height: 1.55;
+    color: var(--amose-feat-body);
+  }
+
+  #shopify-section-{{ section.id }} .amose-features__body p + p {
+    margin-top: 0.75em;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<div class="amose-features{% if s.mobile_layout == 'slider' %} is-mobile-slider{% endif %}">
+  {% if s.heading != blank %}
+    <h2 class="amose-features__heading">{{ s.heading | escape }}</h2>
+  {% endif %}
+
+  <div
+    class="amose-features__grid{% if s.mobile_layout == 'slider' %} is-mobile-slider{% endif %}"
+    {% if s.mobile_layout == 'slider' %}
+      data-amose-features-slider
+    {% endif %}
+  >
+    {% for block in section.blocks %}
+      {% if block.type == 'feature' %}
+        <article class="amose-features__card" {{ block.shopify_attributes }}>
+          <div class="amose-features__media">
+            {% if block.settings.image != blank %}
+              <img
+                src="{{ block.settings.image | image_url: width: 1200 }}"
+                alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                loading="lazy"
+              >
+            {% endif %}
+          </div>
+
+          {% if block.settings.tag_1 != blank or block.settings.tag_2 != blank %}
+            <div class="amose-features__tags">
+              {% if block.settings.tag_1 != blank %}
+                <span class="amose-features__tag">{{ block.settings.tag_1 | escape }}</span>
+              {% endif %}
+              {% if block.settings.tag_2 != blank %}
+                <span class="amose-features__tag">{{ block.settings.tag_2 | escape }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if block.settings.title != blank %}
+            <h3 class="amose-features__title">{{ block.settings.title | escape }}</h3>
+          {% endif %}
+
+          {% if block.settings.text != blank %}
+            <div class="amose-features__body rte">{{ block.settings.text }}</div>
+          {% endif %}
+        </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if s.mobile_layout == 'slider' and feature_count > 1 %}
+    <div class="amose-features__dots" data-amose-features-dots>
+      {% for block in section.blocks %}
+        {% if block.type == 'feature' %}
+          <button
+            type="button"
+            class="amose-features__dot{% if forloop.first %} is-active{% endif %}"
+            data-amose-features-dot
+            data-slide-index="{{ forloop.index0 }}"
+            aria-label="Go to feature {{ forloop.index }}"
+            {% if forloop.first %}
+              aria-current="true"
+            {% else %}
+              aria-current="false"
+            {% endif %}
+          ></button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% if s.mobile_layout == 'slider' and feature_count > 1 %}
+  <script>
+    (function () {
+      var root = document.getElementById("shopify-section-{{ section.id }}");
+      if (!root) return;
+
+      var rail = root.querySelector("[data-amose-features-slider]");
+      var dots = Array.prototype.slice.call(root.querySelectorAll("[data-amose-features-dot]"));
+      if (!rail || !dots.length) return;
+
+      function setActive(index) {
+        dots.forEach(function (dot, i) {
+          var active = i === index;
+          dot.classList.toggle("is-active", active);
+          dot.setAttribute("aria-current", active ? "true" : "false");
+        });
+      }
+
+      function nearestIndex() {
+        var cards = rail.querySelectorAll(".amose-features__card");
+        if (!cards.length) return 0;
+        var railLeft = rail.getBoundingClientRect().left;
+        var best = 0;
+        var bestDist = Number.POSITIVE_INFINITY;
+        cards.forEach(function (card, idx) {
+          var dist = Math.abs(card.getBoundingClientRect().left - railLeft);
+          if (dist < bestDist) {
+            best = idx;
+            bestDist = dist;
+          }
+        });
+        return best;
+      }
+
+      var ticking = false;
+      rail.addEventListener("scroll", function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          setActive(nearestIndex());
+          ticking = false;
+        });
+      }, { passive: true });
+
+      dots.forEach(function (dot) {
+        dot.addEventListener("click", function () {
+          var idx = Number(dot.getAttribute("data-slide-index") || "0");
+          var cards = rail.querySelectorAll(".amose-features__card");
+          var target = cards[idx];
+          if (!target) return;
+          rail.scrollTo({ left: target.offsetLeft, behavior: "smooth" });
+          setActive(idx);
+        });
+      });
+    })();
+  </script>
+{% endif %}
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "features"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Features",
+  "tag": "section",
+  "class": "amose-features-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Space between cards",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "vertical", "label": "Vertical" },
+        { "value": "slider", "label": "Slider" }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Card corner radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "label": "Card border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Card inner padding",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "media_radius",
+      "min": 4,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "4 / 3", "label": "4:3" },
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "3 / 4", "label": "3:4" }
+      ],
+      "default": "4 / 3"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border",
+      "default": "#d4d4d4"
+    },
+    {
+      "type": "color",
+      "id": "tag_bg",
+      "label": "Tag background",
+      "default": "#1e4d3a"
+    },
+    {
+      "type": "color",
+      "id": "tag_text_color",
+      "label": "Tag text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Card title",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Card body",
+      "default": "#404040"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Features"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "tag_1",
+          "label": "Tag 1",
+          "default": "Tag"
+        },
+        {
+          "type": "text",
+          "id": "tag_2",
+          "label": "Tag 2",
+          "default": "Tag"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>Add a short description for this feature.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Features",
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "tag_1": "Microbiome",
+            "tag_2": "Digestive Support",
+            "title": "Probiotic Strains",
+            "text": "<p>A diverse blend of clinically studied probiotic bacteria designed to support gut balance, improve digestion, and promote a healthy microbiome.</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "tag_1": "Prebiotic",
+            "tag_2": "Gut Nourishment",
+            "title": "Prebiotic Fiber",
+            "text": "<p>Plant-based prebiotics feed beneficial gut bacteria, helping them grow and maintain a balanced digestive environment.</p>"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "tag_1": "Polyphenols",
+            "tag_2": "Antioxidant Support",
+            "title": "Plant Polyphenols",
+            "text": "<p>Powerful plant-derived compounds that support beneficial gut microbes while providing antioxidant support for overall wellness.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

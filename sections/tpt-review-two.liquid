@@ -1,0 +1,553 @@
+{% comment %} Section layout style {% endcomment %}
+{{ 'tpt-section.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Section configuration {% endcomment %}
+{%- render 'tpt-section-setting', section: section -%}
+
+{%- if section.index and section.settings.section_lazyload -%}
+  <script src="{{ 'tpt-section-lazyload.js' | asset_url }}" defer="defer"></script>
+
+  <tpt-section-lazyload data-url="?section_id={{ section.id }}">
+    <div data-lazyload-element></div>
+    <span class="tpt-section_loader"></span>
+  </tpt-section-lazyload>
+{%- else -%}
+  {% comment %} Current section style {% endcomment %}
+  {{ 'tpt-swiper.min.css' | asset_url | stylesheet_tag }}
+  {{ 'tpt-slider-control.css' | asset_url | stylesheet_tag }}
+  {{ 'tpt-review-two.css' | asset_url | stylesheet_tag }}
+
+  <script src="{{ 'tpt-swiper.min.js' | asset_url }}" defer="defer"></script>
+
+  {%- capture slider_options -%}
+    {
+      "slidesPerView": 4,
+      {%- if section.settings.loop -%}
+      "loop": true,
+      {%- endif -%}
+
+      {%- if section.settings.auto_play -%}
+      "autoplay": {
+        "delay": 2500,
+        "disableOnInteraction": false
+      },
+      {%- endif -%}
+
+      "pagination": {
+        "type": "bullets"
+      },
+
+      "breakpoints": {
+        "0": {
+          "slidesPerView": {{ section.settings.mobile_column }},
+          "slidesPerGroup": {{ section.settings.mobile_column }},
+          "spaceBetween": 10
+        },
+        "768": {
+          "slidesPerView": {{ section.settings.tablet_column }},
+          "slidesPerGroup": {{ section.settings.tablet_column }},
+          "spaceBetween": 20
+        },
+        "1280": {
+          "slidesPerView": {{ section.settings.desktop_column }},
+          "slidesPerGroup": {{ section.settings.desktop_column }},
+          "spaceBetween": 30
+        }
+      }
+    }
+  {%- endcapture -%}
+
+  <div class="tpt-section_container">
+    <div class="tpt-section_content">
+      {% comment %} Section header {% endcomment %}
+      {%- render 'tpt-section-header', section: section -%}
+
+      <div class="tpt-section-body">
+        {% comment %} Section body {% endcomment %}
+        <tpt-slider class="customer-rating_slider">
+          <tpt-slider-options class="hidden">
+            {{ slider_options }}
+          </tpt-slider-options>
+
+          <div class="tpt-review_two" style="--item-border-radius: {{ section.settings.border_radius }}px; --image-size: {{ section.settings.image_size }}px; --image-border-radius: {{ section.settings.image_border_radius }}px">
+            <div class="tpt-swiper-container">
+              <div class="swiper">
+                <div class="swiper-wrapper">
+                  {%- for block in section.blocks -%}
+                    <div
+                      class="swiper-slide"
+                      style="--item-background-color: {{ section.settings.item_background_color }}; --item-text-color: {{ section.settings.item_text_color }}"
+                    >
+                      <div class="customer-rating_content">
+                        <div class="customer-rating_image">
+                          {%- assign image_alt = block.settings.customer_name | default: shop.name -%}
+
+                          {%- if block.settings.customer_image != blank -%}
+                            {{
+                              block.settings.customer_image
+                              | image_url: width: 200, height: 200
+                              | image_tag: alt: image_alt
+                            }}
+                          {%- else -%}
+                            {%- render 'tpt-image-placeholder' -%}
+                          {%- endif -%}
+                        </div>
+
+                        <h4 class="customer-rating_name h6">{{ block.settings.customer_name }}</h4>
+
+                        <div class="customer-rating_star">
+                          {%- assign not_rating = 5 | minus: block.settings.customer_rating -%}
+
+                          {%- for i in (1..block.settings.customer_rating) -%}
+                            <svg
+                              width="24"
+                              height="25"
+                              viewBox="0 0 24 25"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M23.25 9.95H14.6625L12 1.625L9.3375 9.95H0.75L7.6875 15.0875L5.0625 23.375L12 18.2375L18.9375 23.375L16.275 15.05L23.25 9.95Z" fill="#FFCE31"/>
+                            </svg>
+                          {%- endfor -%}
+
+                          {%- for i in (1..not_rating) -%}
+                            <svg
+                              width="24"
+                              height="25"
+                              viewBox="0 0 24 25"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M23.25 9.95H14.6625L12 1.625L9.3375 9.95H0.75L7.6875 15.0875L5.0625 23.375L12 18.2375L18.9375 23.375L16.275 15.05L23.25 9.95Z" fill="#D9D9D9" fill-opacity="0.85098"/>
+                            </svg>
+                          {%- endfor -%}
+                        </div>
+
+                        <div class="customer-rating_description">
+                          {{ block.settings.customer_description }}
+                        </div>
+                      </div>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              </div>
+
+              {%- if section.settings.nav -%}
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+              {%- endif -%}
+            </div>
+
+            {%- if section.settings.dots -%}
+              <div class="tpt-swiper-paginations swiper-paginations"></div>
+            {%- endif -%}
+          </div>
+        </tpt-slider>
+        {% comment %} End section body {% endcomment %}
+      </div>
+
+      {% comment %} Section footer {% endcomment %}
+      {%- render 'tpt-section-footer', section: section -%}
+    </div>
+  </div>
+{%- endif -%}{%- unless content_for_header contains 'tapita-section-script-tags' -%}{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}{%- endunless -%}
+
+
+{% schema %}
+{
+  "name": "Tpt - Review #2",
+  "tag": "section",
+  "class": "section tpt-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "What People Are Saying",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "h4",
+          "label": "Small"
+        },
+        {
+          "value": "h2",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "sub_heading",
+      "label": "Sub-heading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "top_button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "top_button_link",
+      "label": "Button link"
+    },
+
+    {
+      "type": "header",
+      "content": "Section body"
+    },
+    {
+      "type": "color",
+      "id": "item_background_color",
+      "label": "Item background color",
+      "default": "#fff"
+    },
+    {
+      "type": "color",
+      "id": "item_text_color",
+      "label": "Item text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Item border radius",
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "label": "Image size",
+      "unit": "px",
+      "default": 85
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "label": "Image border radius",
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "nav",
+      "label": "Show nav",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "dots",
+      "label": "Show pagination",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_play",
+      "label": "Auto play",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "desktop_column",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": "Number of columns on desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "tablet_column",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "label": "Number of columns on tablet",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_column",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Number of columns on mobile",
+      "default": 1
+    },
+
+    {
+      "type": "header",
+      "content": "Section footer"
+    },
+    {
+      "type": "text",
+      "id": "bottom_button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "bottom_button_link",
+      "label": "Button link"
+    },
+
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Section full width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 1200,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Section max width",
+      "default": 1600
+    },
+    {
+      "type": "checkbox",
+      "id": "content_full_width",
+      "label": "Content full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 800,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 1440
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding tablet, mobile",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "margin_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin tablet, mobile",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Section color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FEECE2"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient_color",
+      "label": "Background gradient"
+    },
+    {
+      "type": "color",
+      "id": "foreground_color",
+      "label": "Foreground",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "input_button_radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Input, button radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section optimize"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_lazyload",
+      "label": "Section lazyload",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "rate_item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "customer_image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Name",
+          "default": "Michael"
+        },
+        {
+          "type": "richtext",
+          "id": "customer_description",
+          "default": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+          "label": "Description"
+        },
+        {
+          "type": "range",
+          "id": "customer_rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Rating",
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tpt - Review #2",
+      "blocks": [
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        },
+        {
+          "type": "rate_item"
+        }
+      ]
+    }
+  ]
+} 
+{% endschema %}

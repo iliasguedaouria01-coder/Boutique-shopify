@@ -1,0 +1,598 @@
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }}.amose-iwd-root {
+    --amose-iwd-bg: {{ s.section_bg }};
+    --amose-iwd-text: {{ s.text_color }};
+    --amose-iwd-muted: {{ s.muted_text_color }};
+    --amose-iwd-radius: {{ s.image_radius }}px;
+    --amose-heading: clamp(22px, 2.5vw, 30px);
+    --amose-body: clamp(14px, 1.2vw, 16px);
+    --amose-lh-heading: 1.15;
+    --amose-lh-body: 1.55;
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    background: var(--amose-iwd-bg);
+    color: var(--amose-iwd-text);
+    margin: 0 !important;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }}.amose-iwd-root {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 5vw, 60px);
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwd__wrap {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwd__grid {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwd__media {
+      max-width: 100%;
+      justify-self: center;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-iwd__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: clamp(36px, 5vw, 72px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__media {
+    position: relative;
+    border-radius: var(--amose-iwd-radius);
+    overflow: hidden;
+    aspect-ratio: {{ s.image_aspect_ratio }};
+    background: rgba(255, 255, 255, 0.06);
+    width: 100%;
+    max-width: 380px;
+    justify-self: start;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    vertical-align: middle;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__eyebrow {
+    margin: 0 0 12px;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amose-iwd-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__heading {
+    margin: 0 0 18px;
+    font-size: var(--amose-heading);
+    line-height: var(--amose-lh-heading);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--amose-iwd-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__description,
+  #shopify-section-{{ section.id }} .amose-iwd__description p {
+    margin: 0;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    color: var(--amose-iwd-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__description p + p {
+    margin-top: 0.9em;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tpbar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(6px, 1.5vw, 14px);
+    width: 100%;
+    max-width: 100%;
+    margin-top: 20px;
+    color: var(--amose-iwd-text);
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tpbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-label {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 0;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-stars .amose-iwd__tp-star-svg {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-badge {
+    width: min(100px, 26vw);
+    max-width: 100px;
+    height: auto;
+    display: block;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-count {
+    flex-shrink: 0;
+    margin: 0;
+    font-size: clamp(12px, 3.4vw, 14px);
+    line-height: 1.2;
+    color: var(--amose-iwd-text);
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-count strong {
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwd__tp-count span {
+    font-weight: 400;
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<div class="amose-iwd__wrap">
+  <div class="amose-iwd__grid">
+    <div class="amose-iwd__media">
+      {% if s.image != blank %}
+        <img
+          src="{{ s.image | image_url: width: 1600 }}"
+          alt="{{ s.image.alt | default: s.heading | escape }}"
+          width="{{ s.image.width }}"
+          height="{{ s.image.height }}"
+          loading="lazy"
+        >
+      {% endif %}
+    </div>
+
+    <div class="amose-iwd__text">
+      {% if s.eyebrow != blank %}
+        <p class="amose-iwd__eyebrow">{{ s.eyebrow | escape }}</p>
+      {% endif %}
+      {% if s.heading != blank %}
+        <h2 class="amose-iwd__heading">{{ s.heading | escape }}</h2>
+      {% endif %}
+      {% if s.description != blank %}
+        <div class="amose-iwd__description rte">{{ s.description }}</div>
+      {% endif %}
+      {% if s.show_trustpilot %}
+        <div class="amose-iwd__tpbar">
+          {% if s.trustpilot_label != blank %}
+            <span
+              class="amose-iwd__tp-label"
+              style="font-size: {{ s.trustpilot_label_size | default: 14 }}px; font-weight: {{ s.trustpilot_label_weight | default: '600' }};"
+            >
+              {{- s.trustpilot_label | escape -}}
+            </span>
+          {% endif %}
+          <div class="amose-iwd__tp-stars" role="img" aria-label="{{ s.trustpilot_rating | default: '4.8' }} out of 5 stars">
+            <img
+              class="amose-iwd__tp-badge"
+              src="{% if s.trustpilot_badge_image != blank %}{{ s.trustpilot_badge_image }}{% else %}https://i.imgur.com/EHjNmTM.png{% endif %}"
+              width="100"
+              height="20"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            >
+          </div>
+          <p class="amose-iwd__tp-count">
+            <strong>{{ s.trustpilot_review_count | default: '1,284' }}</strong>
+            <span> {{ s.trustpilot_reviews_label | default: 'reviews' }}</span>
+          </p>
+        </div>
+      {% endif %}
+      {% if s.show_star_rating %}
+        <div class="amose-iwd__tpbar">
+          {% if s.star_rating_row_label != blank %}
+            <span
+              class="amose-iwd__tp-label"
+              style="font-size: {{ s.star_rating_label_size | default: 14 }}px; font-weight: {{ s.star_rating_label_weight | default: '600' }};"
+            >
+              {{- s.star_rating_row_label | escape -}}
+            </span>
+          {% endif %}
+          <div
+            class="amose-iwd__tp-stars"
+            role="img"
+            aria-label="{{ s.star_rating_value | default: '4.8' }} out of 5 stars"
+          >
+            {% if s.star_rating_badge_image != blank %}
+              <img
+                class="amose-iwd__tp-badge"
+                src="{{ s.star_rating_badge_image }}"
+                width="100"
+                height="20"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              >
+            {% else %}
+              {% assign sr_sz = s.star_rating_size | default: 16 %}
+              {% for i in (1..5) %}
+                <svg
+                  class="amose-iwd__tp-star-svg"
+                  width="{{ sr_sz }}"
+                  height="{{ sr_sz }}"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="{{ s.star_rating_color | default: '#f59e0b' }}"
+                    d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"
+                  />
+                </svg>
+              {% endfor %}
+            {% endif %}
+          </div>
+          <p class="amose-iwd__tp-count">
+            <strong>{{ s.star_rating_value | default: '4.8' }}</strong>
+            {% if s.star_rating_review_count != blank %}
+              <span> ({{ s.star_rating_review_count | escape }})</span>
+            {% endif %}
+            {% if s.star_rating_reviews_label != blank %}
+              <span> {{ s.star_rating_reviews_label | escape }}</span>
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "image-with-description"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Image with description",
+  "tag": "section",
+  "class": "amose-iwd-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image shape (desktop)",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "4 / 3", "label": "Landscape" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Eyebrow & description",
+      "default": "#555555"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Science-backed support"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A better way to support your routine."
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>This section is for longer supporting copy. Explain why your product is different, what makes it effective, and what customers can expect when using it consistently.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Left image"
+    },
+    {
+      "type": "header",
+      "content": "Trustpilot row"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trustpilot",
+      "label": "Show Trustpilot row under description",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_label",
+      "label": "Label",
+      "default": "Excellent"
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_rating",
+      "label": "Rating",
+      "default": "4.8"
+    },
+    {
+      "type": "url",
+      "id": "trustpilot_badge_image",
+      "label": "Badge image URL",
+      "info": "Leave blank to use the default Trustpilot-style stars image."
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_review_count",
+      "label": "Review count",
+      "default": "20,921"
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_reviews_label",
+      "label": "Reviews label",
+      "default": "reviews"
+    },
+    {
+      "type": "range",
+      "id": "trustpilot_label_size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Label font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "trustpilot_label_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Star rating row"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_star_rating",
+      "label": "Show star rating row under description",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "star_rating_row_label",
+      "label": "Label",
+      "default": "Rated",
+      "info": "Same position as the Trustpilot label — before the stars."
+    },
+    {
+      "type": "text",
+      "id": "star_rating_value",
+      "label": "Rating number",
+      "default": "4.8",
+      "info": "Shown in the count area like the Trustpilot row: 4.8 (350) reviews. Also used for the stars’ accessibility label."
+    },
+    {
+      "type": "url",
+      "id": "star_rating_badge_image",
+      "label": "Badge image URL",
+      "info": "Same as Trustpilot: optional image strip. Leave blank to use five built-in star icons (color below)."
+    },
+    {
+      "type": "color",
+      "id": "star_rating_color",
+      "label": "Star color (built-in icons)",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "range",
+      "id": "star_rating_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Star size (built-in icons)",
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "star_rating_review_count",
+      "label": "Review count",
+      "default": "1,284"
+    },
+    {
+      "type": "text",
+      "id": "star_rating_reviews_label",
+      "label": "Reviews label",
+      "default": "reviews"
+    },
+    {
+      "type": "range",
+      "id": "star_rating_label_size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Label font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "star_rating_label_weight",
+      "label": "Label weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with description"
+    }
+  ]
+}
+{% endschema %}

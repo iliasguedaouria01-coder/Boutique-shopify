@@ -1,0 +1,504 @@
+{%- comment -%}
+  Icons: simple white line-art for benefit blocks
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign amose_install_origin = 'https://amosesection1-production.up.railway.app'
+  assign amose_status_script_url = amose_install_origin | append: '/amose-section-status.js'
+  assign amose_skip_install_mask = false
+  if request.design_mode
+    assign amose_skip_install_mask = true
+  endif
+  if theme.role == 'development'
+    assign amose_skip_install_mask = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }}[class*="amose-"] {
+    font-size: 16px;
+  }
+  #shopify-section-{{ section.id }} {
+    --amose-iwb-bg: {{ s.section_bg }};
+    --amose-iwb-text: {{ s.text_color }};
+    --amose-iwb-muted: {{ s.muted_text_color }};
+    --amose-iwb-radius: {{ s.image_radius }}px;
+    --amose-heading: clamp(22px, 2.5vw, 30px);
+    --amose-body: clamp(14px, 1.2vw, 16px);
+    --amose-lh-heading: 1.15;
+    --amose-lh-body: 1.55;
+    padding-top: {{ s.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ s.padding_bottom | times: 0.75 | round: 0 }}px;
+    background: var(--amose-iwb-bg);
+    color: var(--amose-iwb-text);
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} {
+      padding-top: {{ s.padding_top }}px;
+      padding-bottom: {{ s.padding_bottom }}px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} {
+      margin-top: {{ s.desktop_margin_top | default: 24 }}px;
+    }
+    /* Template 4 converted section keeps key "amose_image_description"; force no top gap there only. */
+    #shopify-section-{{ section.id }}[id*="amose_image_description"] {
+      margin-top: 0 !important;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__wrap {
+    max-width: {{ s.max_width }}px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__grid-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 6vw, 64px);
+    align-items: center;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb__wrap {
+      padding: 0 clamp(20px, 3.2vw, 30px);
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb__grid-main {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    #shopify-section-{{ section.id }} .amose-iwb__media {
+      order: 0;
+      justify-self: center;
+      max-height: none;
+      aspect-ratio: {{ s.image_aspect_ratio }};
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} .amose-iwb__grid-main {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+      gap: clamp(40px, 6vw, 80px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__eyebrow {
+    margin: 0 0 12px;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amose-iwb-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__heading {
+    margin: 0 0 clamp(28px, 4vw, 40px);
+    font-size: var(--amose-heading);
+    font-weight: 700;
+    line-height: var(--amose-lh-heading);
+    letter-spacing: -0.02em;
+    color: var(--amose-iwb-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__benefits {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(20px, 3vw, 28px);
+  }
+
+  @media screen and (min-width: 600px) {
+    #shopify-section-{{ section.id }} .amose-iwb__benefits {
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(20px, 3vw, 36px);
+      row-gap: clamp(24px, 3vw, 32px);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__benefit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__title-icon {
+    color: var(--amose-iwb-text);
+    font-size: 18px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__title {
+    margin: 0;
+    font-size: var(--amose-body);
+    font-weight: 700;
+    line-height: var(--amose-lh-body);
+    color: var(--amose-iwb-text);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__desc,
+  #shopify-section-{{ section.id }} .amose-iwb__desc p {
+    margin: 0;
+    font-size: var(--amose-body);
+    line-height: var(--amose-lh-body);
+    font-weight: 400;
+    color: var(--amose-iwb-muted);
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__media {
+    position: relative;
+    border-radius: var(--amose-iwb-radius);
+    overflow: hidden;
+    aspect-ratio: {{ s.image_aspect_ratio }};
+    background: rgba(255, 255, 255, 0.06);
+    max-width: 380px;
+    width: 100%;
+    justify-self: end;
+  }
+
+  #shopify-section-{{ section.id }} .amose-iwb__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    vertical-align: middle;
+  }
+
+  @media screen and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb__media {
+      order: -1;
+      justify-self: center;
+      max-height: 420px;
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    #shopify-section-{{ section.id }} .amose-iwb__media {
+      order: 0;
+      max-height: none;
+      aspect-ratio: {{ s.image_aspect_ratio }};
+    }
+  }
+{%- endstyle -%}
+
+{%- unless amose_skip_install_mask -%}
+{%- comment -%} Install check: hide only after API says uninstalled (amose-section-status.js). {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ section.id }}.amose-section-checking {
+    display: none !important;
+  }
+{%- endstyle -%}
+{%- endunless -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<div class="amose-iwb__wrap">
+  <div class="amose-iwb__grid-main">
+    <div class="amose-iwb__text">
+      {% if s.eyebrow != blank %}
+        <p class="amose-iwb__eyebrow">{{ s.eyebrow | escape }}</p>
+      {% endif %}
+      {% if s.heading != blank %}
+        <h2 class="amose-iwb__heading">{{ s.heading | escape }}</h2>
+      {% endif %}
+
+      <div class="amose-iwb__benefits">
+        {% for block in section.blocks %}
+          <div class="amose-iwb__benefit" {{ block.shopify_attributes }}>
+            {% if block.settings.title != blank %}
+              <div class="amose-iwb__title-row">
+                {% if block.settings.icon != blank and block.settings.icon != 'none' %}
+                  <span class="amose-iwb__title-icon" aria-hidden="true">
+                    <i class="ph ph-{{ block.settings.icon }}"></i>
+                  </span>
+                {% endif %}
+                <h3 class="amose-iwb__title">{{ block.settings.title | escape }}</h3>
+              </div>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <div class="amose-iwb__desc rte">{{ block.settings.text }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="amose-iwb__media">
+      {% if s.image != blank %}
+        <img
+          src="{{ s.image | image_url: width: 1600 }}"
+          alt="{{ s.image.alt | default: s.heading | escape }}"
+          width="{{ s.image.width }}"
+          height="{{ s.image.height }}"
+          loading="lazy"
+        >
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{%- unless amose_skip_install_mask -%}
+<script>
+  window.__AmoseInstallCheckPageStart = window.__AmoseInstallCheckPageStart || Date.now();
+  window.__AmoseInstallCheckOrigin = {{ amose_install_origin | json }};
+  window.AmoseSectionStatus = window.AmoseSectionStatus || [];
+  window.AmoseSectionStatus.push({
+    shop: {{ shop.permanent_domain | json }},
+    sectionId: {{ section.id | json }},
+    sectionType: "image-with-benefits"
+  });
+
+  window.AmoseStatusLoaderInserted = window.AmoseStatusLoaderInserted || false;
+
+  if (!window.AmoseStatusLoaderInserted) {
+    window.AmoseStatusLoaderInserted = true;
+    var script = document.createElement("script");
+    script.src = {{ amose_status_script_url | json }};
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+</script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Image with benefits",
+  "tag": "section",
+  "class": "amose-image-with-benefits",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image shape (desktop)",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "4 / 3", "label": "Landscape" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#1a3021"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading & titles",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Eyebrow & descriptions",
+      "default": "#c8d4c8"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Science-Backed Gut Health"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Feel the difference of a truly healthy gut."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Right image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "drop-simple", "label": "DropSimple" },
+            { "value": "eyedropper-sample", "label": "EyedropperSample" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "hand-heart", "label": "HandHeart" },
+            { "value": "star", "label": "Star" },
+            { "value": "star-four", "label": "StarFour" },
+            { "value": "sparkle", "label": "Sparkle" },
+            { "value": "brain", "label": "Brain" },
+            { "value": "calendar", "label": "Calendar" },
+            { "value": "check-circle", "label": "CheckCircle" },
+            { "value": "drop-slash", "label": "DropSlash" },
+            { "value": "fire", "label": "Fire" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "hands-clapping", "label": "HandsClapping" },
+            { "value": "magic-wand", "label": "MagicWand" },
+            { "value": "plant", "label": "Plant" },
+            { "value": "push-pin", "label": "PushPin" },
+            { "value": "rocket-launch", "label": "RocketLaunch" },
+            { "value": "scan-smiley", "label": "ScanSmiley" },
+            { "value": "scroll", "label": "Scroll" },
+            { "value": "seal-check", "label": "SealCheck" },
+            { "value": "shield-check", "label": "ShieldCheck" },
+            { "value": "shooting-star", "label": "ShootingStar" },
+            { "value": "smiley-sticker", "label": "SmileySticker" },
+            { "value": "tree", "label": "Tree" },
+            { "value": "virus", "label": "Virus" },
+            { "value": "waves", "label": "Waves" },
+            { "value": "x-circle", "label": "XCircle" },
+            { "value": "trophy", "label": "Trophy" },
+            { "value": "user", "label": "User" },
+            { "value": "users", "label": "Users" },
+            { "value": "timer", "label": "Timer" },
+            { "value": "thermometer", "label": "Thermometer" },
+            { "value": "syringe", "label": "Syringe" },
+            { "value": "spray-bottle", "label": "SprayBottle" },
+            { "value": "speedometer", "label": "Speedometer" },
+            { "value": "shower", "label": "Shower" },
+            { "value": "shirt-folded", "label": "ShirtFolded" },
+            { "value": "security-camera", "label": "SecurityCamera" },
+            { "value": "ranking", "label": "Ranking" },
+            { "value": "plus-circle", "label": "PlusCircle" },
+            { "value": "pill", "label": "Pill" },
+            { "value": "person", "label": "Person" },
+            { "value": "paw-print", "label": "PawPrint" },
+            { "value": "pants", "label": "Pants" },
+            { "value": "paint-brush", "label": "PaintBrush" },
+            { "value": "orange", "label": "Orange" },
+            { "value": "medal", "label": "Medal" },
+            { "value": "none", "label": "None" }
+          ],
+          "default": "drop-simple"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Benefit title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>Short supporting copy for this benefit.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with benefits",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "drop-simple",
+            "title": "Diverse Probiotic Strains",
+            "text": "<p>24 strains support microbial diversity, the foundation of a healthy gut.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "shield-check",
+            "title": "Engineered to Survive",
+            "text": "<p>ViaCap® delivery system safeguards probiotics all the way to the colon.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "sparkle",
+            "title": "Feeds Good Gut Microbes",
+            "text": "<p>Antioxidant-promoting prebiotic feeds beneficial gut microbes.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "rocket-launch",
+            "title": "Proven in 4 Clinical Trials",
+            "text": "<p>Scientifically validated in four, gold-standard clinical trials.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
