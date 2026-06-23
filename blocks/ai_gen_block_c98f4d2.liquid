@@ -1,0 +1,654 @@
+{% doc %}
+  @prompt
+    fait moi une section Conseil d'utilisation avec les couleur du nuancier 10 avec ce texte : Conseils d’utilisation
+    
+    Pour que Serenimo soit bien vécu par ton chien, l’idéal est de l’introduire progressivement et dans un moment calme. Comme pour tout nouvel accessoire, une approche douce donne souvent de meilleurs résultats.
+    
+    1. Présente Serenimo dans un moment calme
+    
+    La première fois, fais découvrir le gilet à ton chien lorsqu’il est détendu, à la maison, sans source de stress autour de lui.
+    
+    2. Associe-le à quelque chose de positif
+    
+    Tu peux l’encourager avec une friandise, une caresse ou une voix rassurante pour créer une association positive dès le départ.
+    
+    3. Mets-le quelques minutes au début
+    
+    Commence par de courtes périodes, puis augmente progressivement le temps de port pour que ton chien s’y habitue confortablement.
+    
+    4. Utilise-le avant le moment sensible
+    
+    Pour une utilisation optimale, mets Serenimo quelques minutes avant la situation stressante :
+    
+    avant de partir de la maison
+    avant un trajet
+    avant une visite chez le vétérinaire
+    avant un orage ou des feux d’artifice
+    avant un changement d’habitude ou une situation inhabituelle
+    5. Vérifie qu’il est bien ajusté
+    
+    Le gilet doit être confortable, bien en place et non gênant. Il doit offrir un maintien doux tout en laissant à ton chien une bonne liberté de mouvement.
+    
+    6. Observe les réactions de ton chien
+    
+    Chaque chien est différent. Certains s’y habituent très vite, d’autres ont besoin d’un peu plus de temps. L’essentiel est d’intégrer Serenimo à la routine de manière progressive et rassurante.
+    
+    Bon à savoir
+    
+    Serenimo a été pensé comme une aide douce et simple à intégrer au quotidien. Il accompagne ton chien dans les moments sensibles, sans compliquer ta routine., Met toute la section sans largeur maximal
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-usage-tips-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.section_padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+  }
+
+  .ai-usage-tips-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.title_alignment }};
+    margin-bottom: {{ block.settings.title_spacing }}px;
+  }
+
+  .ai-usage-tips-title-{{ ai_gen_id }} {
+    color: {{ block.settings.title_color }};
+    font-size: {{ block.settings.title_size }}px;
+    margin: 0 0 {{ block.settings.subtitle_spacing }}px 0;
+    line-height: 1.3;
+  }
+
+  .ai-usage-tips-intro-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-usage-tips-list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: {{ block.settings.list_spacing }}px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.item_spacing }}px;
+  }
+
+  .ai-usage-tips-item-{{ ai_gen_id }} {
+    background-color: {{ block.settings.item_background }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+    padding: {{ block.settings.item_padding }}px;
+    border-left: {{ block.settings.item_border_width }}px solid {{ block.settings.accent_color }};
+  }
+
+  .ai-usage-tips-item-number-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: {{ block.settings.number_size }}px;
+    height: {{ block.settings.number_size }}px;
+    background-color: {{ block.settings.accent_color }};
+    color: {{ block.settings.number_text_color }};
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: {{ block.settings.number_font_size }}px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .ai-usage-tips-item-header-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .ai-usage-tips-item-title-{{ ai_gen_id }} {
+    color: {{ block.settings.item_title_color }};
+    font-size: {{ block.settings.item_title_size }}px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .ai-usage-tips-item-content-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-usage-tips-item-content-{{ ai_gen_id }} p {
+    margin: 0 0 8px 0;
+  }
+
+  .ai-usage-tips-item-content-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-usage-tips-item-content-{{ ai_gen_id }} ul {
+    margin: 8px 0;
+    padding-left: 20px;
+  }
+
+  .ai-usage-tips-item-content-{{ ai_gen_id }} li {
+    margin-bottom: 4px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-usage-tips-note-{{ ai_gen_id }} {
+    margin-top: {{ block.settings.note_spacing }}px;
+    padding: {{ block.settings.note_padding }}px;
+    background-color: {{ block.settings.note_background }};
+    border-radius: {{ block.settings.note_border_radius }}px;
+    border: 1px solid {{ block.settings.note_border_color }};
+  }
+
+  .ai-usage-tips-note-title-{{ ai_gen_id }} {
+    color: {{ block.settings.note_title_color }};
+    font-size: {{ block.settings.note_title_size }}px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .ai-usage-tips-note-text-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-usage-tips-{{ ai_gen_id }} {
+      padding: {{ block.settings.section_padding | times: 0.6 }}px;
+    }
+
+    .ai-usage-tips-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.8 }}px;
+    }
+
+    .ai-usage-tips-item-{{ ai_gen_id }} {
+      padding: {{ block.settings.item_padding | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-usage-tips-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-usage-tips-header-{{ ai_gen_id }}">
+    <h2 class="ai-usage-tips-title-{{ ai_gen_id }}">{{ block.settings.main_title }}</h2>
+    {% if block.settings.intro_text != blank %}
+      <div class="ai-usage-tips-intro-{{ ai_gen_id }}">{{ block.settings.intro_text }}</div>
+    {% endif %}
+  </div>
+
+  <ol class="ai-usage-tips-list-{{ ai_gen_id }}">
+    {% for i in (1..6) %}
+      {% liquid
+        assign title_key = 'tip_' | append: i | append: '_title'
+        assign content_key = 'tip_' | append: i | append: '_content'
+        assign tip_title = block.settings[title_key]
+        assign tip_content = block.settings[content_key]
+      %}
+      
+      {% if tip_title != blank %}
+        <li class="ai-usage-tips-item-{{ ai_gen_id }}">
+          <div class="ai-usage-tips-item-header-{{ ai_gen_id }}">
+            <span class="ai-usage-tips-item-number-{{ ai_gen_id }}">{{ i }}</span>
+            <h3 class="ai-usage-tips-item-title-{{ ai_gen_id }}">{{ tip_title }}</h3>
+          </div>
+          {% if tip_content != blank %}
+            <div class="ai-usage-tips-item-content-{{ ai_gen_id }}">{{ tip_content }}</div>
+          {% endif %}
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+
+  {% if block.settings.note_title != blank or block.settings.note_text != blank %}
+    <div class="ai-usage-tips-note-{{ ai_gen_id }}">
+      {% if block.settings.note_title != blank %}
+        <h3 class="ai-usage-tips-note-title-{{ ai_gen_id }}">{{ block.settings.note_title }}</h3>
+      {% endif %}
+      {% if block.settings.note_text != blank %}
+        <div class="ai-usage-tips-note-text-{{ ai_gen_id }}">{{ block.settings.note_text }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Conseils d'utilisation",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Titre principal"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "main_title",
+      "label": "Titre",
+      "default": "Conseils d'utilisation"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Texte d'introduction",
+      "default": "<p>Pour que Serenimo soit bien vécu par ton chien, l'idéal est de l'introduire progressivement et dans un moment calme. Comme pour tout nouvel accessoire, une approche douce donne souvent de meilleurs résultats.</p>"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "label": "Alignement du titre",
+      "options": [
+        {
+          "value": "left",
+          "label": "Gauche"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 1"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_1_title",
+      "label": "Titre",
+      "default": "Présente Serenimo dans un moment calme"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_1_content",
+      "label": "Contenu",
+      "default": "<p>La première fois, fais découvrir le gilet à ton chien lorsqu'il est détendu, à la maison, sans source de stress autour de lui.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 2"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_2_title",
+      "label": "Titre",
+      "default": "Associe-le à quelque chose de positif"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_2_content",
+      "label": "Contenu",
+      "default": "<p>Tu peux l'encourager avec une friandise, une caresse ou une voix rassurante pour créer une association positive dès le départ.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 3"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_3_title",
+      "label": "Titre",
+      "default": "Mets-le quelques minutes au début"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_3_content",
+      "label": "Contenu",
+      "default": "<p>Commence par de courtes périodes, puis augmente progressivement le temps de port pour que ton chien s'y habitue confortablement.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 4"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_4_title",
+      "label": "Titre",
+      "default": "Utilise-le avant le moment sensible"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_4_content",
+      "label": "Contenu",
+      "default": "<p>Pour une utilisation optimale, mets Serenimo quelques minutes avant la situation stressante :</p><ul><li>avant de partir de la maison</li><li>avant un trajet</li><li>avant une visite chez le vétérinaire</li><li>avant un orage ou des feux d'artifice</li><li>avant un changement d'habitude ou une situation inhabituelle</li></ul>"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 5"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_5_title",
+      "label": "Titre",
+      "default": "Vérifie qu'il est bien ajusté"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_5_content",
+      "label": "Contenu",
+      "default": "<p>Le gilet doit être confortable, bien en place et non gênant. Il doit offrir un maintien doux tout en laissant à ton chien une bonne liberté de mouvement.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Conseil 6"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tip_6_title",
+      "label": "Titre",
+      "default": "Observe les réactions de ton chien"
+    },
+    {
+      "type": "richtext",
+      "id": "tip_6_content",
+      "label": "Contenu",
+      "default": "<p>Chaque chien est différent. Certains s'y habituent très vite, d'autres ont besoin d'un peu plus de temps. L'essentiel est d'intégrer Serenimo à la routine de manière progressive et rassurante.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Note finale"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "note_title",
+      "label": "Titre de la note",
+      "default": "Bon à savoir"
+    },
+    {
+      "type": "richtext",
+      "id": "note_text",
+      "label": "Texte de la note",
+      "default": "<p>Serenimo a été pensé comme une aide douce et simple à intégrer au quotidien. Il accompagne ton chien dans les moments sensibles, sans compliquer ta routine.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Mise en page"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Largeur sur ordinateur",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Espacement de la section",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Arrondi des coins",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Espacement"
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "label": "Espacement après le titre",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "subtitle_spacing",
+      "label": "Espacement après le sous-titre",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "list_spacing",
+      "label": "Espacement avant la liste",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Espacement entre les conseils",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "note_spacing",
+      "label": "Espacement avant la note",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Style des conseils"
+    },
+    {
+      "type": "range",
+      "id": "item_padding",
+      "label": "Espacement interne",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "label": "Arrondi des coins",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "item_border_width",
+      "label": "Largeur de la bordure gauche",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Style des numéros"
+    },
+    {
+      "type": "range",
+      "id": "number_size",
+      "label": "Taille du cercle",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "number_font_size",
+      "label": "Taille de la police",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Style de la note"
+    },
+    {
+      "type": "range",
+      "id": "note_padding",
+      "label": "Espacement interne",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "note_border_radius",
+      "label": "Arrondi des coins",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typographie"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Taille du titre principal",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "item_title_size",
+      "label": "Taille des titres de conseils",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Taille du texte",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "note_title_size",
+      "label": "Taille du titre de la note",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fond de la section",
+      "default": "#f5f1e8"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Couleur du titre",
+      "default": "#5f7c8a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte",
+      "default": "#3e4347"
+    },
+    {
+      "type": "color",
+      "id": "item_background",
+      "label": "Fond des conseils",
+      "default": "#fcfbf8"
+    },
+    {
+      "type": "color",
+      "id": "item_title_color",
+      "label": "Couleur des titres de conseils",
+      "default": "#5f7c8a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Couleur d'accentuation",
+      "default": "#d9895b"
+    },
+    {
+      "type": "color",
+      "id": "number_text_color",
+      "label": "Couleur du texte des numéros",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "note_background",
+      "label": "Fond de la note",
+      "default": "#fcfbf8"
+    },
+    {
+      "type": "color",
+      "id": "note_border_color",
+      "label": "Bordure de la note",
+      "default": "#a8bfa84d"
+    },
+    {
+      "type": "color",
+      "id": "note_title_color",
+      "label": "Couleur du titre de la note",
+      "default": "#d9895b"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Conseils d'utilisation"
+    }
+  ]
+}
+{% endschema %}

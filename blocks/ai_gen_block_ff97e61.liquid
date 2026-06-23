@@ -1,0 +1,488 @@
+{% doc %}
+  @prompt
+    genere moi une section conseil d'entretien voila les infos que je veux avoir : Pour préserver l’éclat de votre bague ANCR le plus longtemps possible, nous vous conseillons de :
+    
+    éviter le contact avec l’eau, les parfums et les produits chimiques
+    retirer votre bague avant le sport, la douche ou le ménage
+    la conserver dans un endroit sec, à l’abri de l’humidité
+    la nettoyer délicatement avec un chiffon doux
+    
+    Un entretien simple et régulier permet de conserver la beauté et la brillance de votre bijou au fil du temps.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-care-tips-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+  }
+
+  .ai-care-tips-container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-care-tips-header-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    margin-bottom: {{ block.settings.spacing_after_heading }}px;
+  }
+
+  .ai-care-tips-title-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.spacing_after_title }}px 0;
+  }
+
+  .ai-care-tips-subtitle-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.subtitle_size }}px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .ai-care-tips-list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 {{ block.settings.spacing_after_list }}px 0;
+    display: grid;
+    gap: {{ block.settings.item_spacing }}px;
+  }
+
+  .ai-care-tips-item-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: {{ block.settings.icon_spacing }}px;
+    padding: {{ block.settings.item_padding }}px;
+    background-color: {{ block.settings.item_background_color }};
+    border-radius: {{ block.settings.item_border_radius }}px;
+  }
+
+  .ai-care-tips-icon-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: {{ block.settings.icon_background_color }};
+    border-radius: 50%;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-care-tips-icon-{{ ai_gen_id }} svg {
+    width: calc({{ block.settings.icon_size }}px * 0.5);
+    height: calc({{ block.settings.icon_size }}px * 0.5);
+  }
+
+  .ai-care-tips-text-{{ ai_gen_id }} {
+    flex: 1;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .ai-care-tips-footer-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.footer_text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-care-tips-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-care-tips-title-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.8);
+    }
+
+    .ai-care-tips-subtitle-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.subtitle_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<care-tips-{{ ai_gen_id }} class="ai-care-tips-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-care-tips-container-{{ ai_gen_id }}">
+    <div class="ai-care-tips-header-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-care-tips-title-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+      {% endif %}
+      {% if block.settings.subtitle != blank %}
+        <div class="ai-care-tips-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</div>
+      {% endif %}
+    </div>
+
+    <ul class="ai-care-tips-list-{{ ai_gen_id }}">
+      {% if block.settings.tip_1_text != blank %}
+        <li class="ai-care-tips-item-{{ ai_gen_id }}">
+          <div class="ai-care-tips-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+            </svg>
+          </div>
+          <p class="ai-care-tips-text-{{ ai_gen_id }}">{{ block.settings.tip_1_text }}</p>
+        </li>
+      {% endif %}
+
+      {% if block.settings.tip_2_text != blank %}
+        <li class="ai-care-tips-item-{{ ai_gen_id }}">
+          <div class="ai-care-tips-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <p class="ai-care-tips-text-{{ ai_gen_id }}">{{ block.settings.tip_2_text }}</p>
+        </li>
+      {% endif %}
+
+      {% if block.settings.tip_3_text != blank %}
+        <li class="ai-care-tips-item-{{ ai_gen_id }}">
+          <div class="ai-care-tips-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+              <line x1="12" y1="14" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <p class="ai-care-tips-text-{{ ai_gen_id }}">{{ block.settings.tip_3_text }}</p>
+        </li>
+      {% endif %}
+
+      {% if block.settings.tip_4_text != blank %}
+        <li class="ai-care-tips-item-{{ ai_gen_id }}">
+          <div class="ai-care-tips-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <p class="ai-care-tips-text-{{ ai_gen_id }}">{{ block.settings.tip_4_text }}</p>
+        </li>
+      {% endif %}
+    </ul>
+
+    {% if block.settings.footer_text != blank %}
+      <p class="ai-care-tips-footer-{{ ai_gen_id }}">{{ block.settings.footer_text }}</p>
+    {% endif %}
+  </div>
+</care-tips-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CareTips{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+      }
+    }
+
+    customElements.define('care-tips-{{ ai_gen_id }}', CareTips{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Conseils d'entretien",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenu"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Titre",
+      "default": "Conseils d'entretien"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subtitle",
+      "label": "Sous-titre",
+      "default": "Pour préserver l'éclat de votre bague ANCR le plus longtemps possible, nous vous conseillons de :"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_1_text",
+      "label": "Conseil 1",
+      "default": "éviter le contact avec l'eau, les parfums et les produits chimiques"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_2_text",
+      "label": "Conseil 2",
+      "default": "retirer votre bague avant le sport, la douche ou le ménage"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_3_text",
+      "label": "Conseil 3",
+      "default": "la conserver dans un endroit sec, à l'abri de l'humidité"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_4_text",
+      "label": "Conseil 4",
+      "default": "la nettoyer délicatement avec un chiffon doux"
+    },
+    {
+      "type": "textarea",
+      "id": "footer_text",
+      "label": "Texte de conclusion",
+      "default": "Un entretien simple et régulier permet de conserver la beauté et la brillance de votre bijou au fil du temps."
+    },
+    {
+      "type": "header",
+      "content": "Mise en page"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Largeur sur ordinateur",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Largeur maximale du contenu",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alignement du texte",
+      "options": [
+        {
+          "value": "left",
+          "label": "Gauche"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Espacement intérieur",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Arrondi des coins",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Espacement"
+    },
+    {
+      "type": "range",
+      "id": "spacing_after_heading",
+      "label": "Espacement après l'en-tête",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "spacing_after_title",
+      "label": "Espacement après le titre",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "spacing_after_list",
+      "label": "Espacement après la liste",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Espacement entre les conseils",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Style des conseils"
+    },
+    {
+      "type": "range",
+      "id": "item_padding",
+      "label": "Espacement intérieur des conseils",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "label": "Arrondi des coins des conseils",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "item_background_color",
+      "label": "Couleur de fond des conseils",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "header",
+      "content": "Icônes"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Taille des icônes",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "icon_spacing",
+      "label": "Espacement icône-texte",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "icon_background_color",
+      "label": "Couleur de fond des icônes",
+      "default": "#0a1a2f"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Couleur des icônes",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Couleur de fond",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Couleur du titre",
+      "default": "#0a1a2f"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Typographie"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Taille du titre",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Taille du sous-titre",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Taille du texte",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "footer_text_size",
+      "label": "Taille du texte de conclusion",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    }
+  ],
+  "presets": [
+    {
+      "name": "Conseils d'entretien"
+    }
+  ]
+}
+{% endschema %}

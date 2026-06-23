@@ -1,0 +1,405 @@
+{% doc %}
+  @prompt
+    fait moi le meme formulaire de contacte au dessus mais avec les couleur du nunacier 10
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-contact-form-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: 40px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+  }
+
+  .ai-contact-form__content-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 0 auto;
+  }
+
+  .ai-contact-form__heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    margin: 0;
+    font-size: {{ block.settings.heading_size }}px;
+  }
+
+  .ai-contact-form__subtext-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    margin: 0;
+  }
+
+  .ai-contact-form__field-wrapper-{{ ai_gen_id }} {
+    width: 100%;
+  }
+
+  .ai-contact-form__label-{{ ai_gen_id }} {
+    display: block;
+    margin-bottom: 8px;
+    color: {{ block.settings.text_color }};
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .ai-contact-form__input-{{ ai_gen_id }},
+  .ai-contact-form__textarea-{{ ai_gen_id }} {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background_color }};
+    color: {{ block.settings.text_color }};
+    font-size: 16px;
+  }
+
+  .ai-contact-form__input-{{ ai_gen_id }}:hover,
+  .ai-contact-form__textarea-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.input_hover_background }};
+  }
+
+  .ai-contact-form__input-{{ ai_gen_id }}:focus,
+  .ai-contact-form__textarea-{{ ai_gen_id }}:focus {
+    outline: 2px solid {{ block.settings.primary_color }};
+    outline-offset: 2px;
+  }
+
+  .ai-contact-form__textarea-{{ ai_gen_id }} {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .ai-contact-form__button-{{ ai_gen_id }} {
+    padding: 14px 32px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: 1px solid {{ block.settings.button_color }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .ai-contact-form__button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+    border-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-contact-form__success-{{ ai_gen_id }} {
+    color: {{ block.settings.success_color }};
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .ai-contact-form__error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-contact-form-{{ ai_gen_id }} {
+      padding: 24px;
+    }
+  }
+{% endstyle %}
+
+<div
+  class="ai-contact-form-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {%- form 'contact' -%}
+    <div class="ai-contact-form__content-{{ ai_gen_id }}">
+      {%- if block.settings.heading != blank -%}
+        <h2 class="ai-contact-form__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if block.settings.subtext != blank -%}
+        <div class="ai-contact-form__subtext-{{ ai_gen_id }}">{{ block.settings.subtext }}</div>
+      {%- endif -%}
+
+      <div class="ai-contact-form__field-wrapper-{{ ai_gen_id }}">
+        <label for="contact-name-{{ ai_gen_id }}" class="ai-contact-form__label-{{ ai_gen_id }}">
+          Nom
+        </label>
+        <input
+          type="text"
+          id="contact-name-{{ ai_gen_id }}"
+          name="contact[name]"
+          class="ai-contact-form__input-{{ ai_gen_id }}"
+          value="{{ form.name }}"
+          autocomplete="name"
+          {% if form.errors %}
+            aria-invalid="true"
+          {% endif %}
+          required
+        >
+      </div>
+
+      <div class="ai-contact-form__field-wrapper-{{ ai_gen_id }}">
+        <label for="contact-email-{{ ai_gen_id }}" class="ai-contact-form__label-{{ ai_gen_id }}">
+          Email
+        </label>
+        <input
+          type="email"
+          id="contact-email-{{ ai_gen_id }}"
+          name="contact[email]"
+          class="ai-contact-form__input-{{ ai_gen_id }}"
+          value="{{ form.email }}"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="ai-contact-form-error-{{ ai_gen_id }}"
+          {% endif %}
+          {% if form.posted_successfully? %}
+            aria-describedby="ai-contact-form-success-{{ ai_gen_id }}"
+          {% endif %}
+          required
+        >
+      </div>
+
+      <div class="ai-contact-form__field-wrapper-{{ ai_gen_id }}">
+        <label for="contact-phone-{{ ai_gen_id }}" class="ai-contact-form__label-{{ ai_gen_id }}">
+          Téléphone
+        </label>
+        <input
+          type="tel"
+          id="contact-phone-{{ ai_gen_id }}"
+          name="contact[phone]"
+          class="ai-contact-form__input-{{ ai_gen_id }}"
+          value="{{ form.phone }}"
+          autocomplete="tel"
+        >
+      </div>
+
+      <div class="ai-contact-form__field-wrapper-{{ ai_gen_id }}">
+        <label for="contact-message-{{ ai_gen_id }}" class="ai-contact-form__label-{{ ai_gen_id }}">
+          Message
+        </label>
+        <textarea
+          id="contact-message-{{ ai_gen_id }}"
+          name="contact[body]"
+          class="ai-contact-form__textarea-{{ ai_gen_id }}"
+          required
+        >{{ form.body }}</textarea>
+      </div>
+
+      {%- if form.errors -%}
+        <div
+          id="ai-contact-form-error-{{ ai_gen_id }}"
+          class="ai-contact-form__error-{{ ai_gen_id }}"
+        >
+          <span>{{ form.errors.messages.email }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if form.posted_successfully? -%}
+        <div
+          id="ai-contact-form-success-{{ ai_gen_id }}"
+          class="ai-contact-form__success-{{ ai_gen_id }}"
+        >
+          <span>{{ block.settings.success_message }}</span>
+        </div>
+      {%- endif -%}
+
+      <button
+        type="submit"
+        class="ai-contact-form__button-{{ ai_gen_id }}"
+      >
+        {{ block.settings.button_label }}
+      </button>
+    </div>
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "Formulaire de contact",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenu"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Titre",
+      "default": "<p>Contactez-nous</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "subtext",
+      "label": "Sous-titre",
+      "default": "<p>Nous sommes là pour vous aider. Envoyez-nous un message.</p>"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "button_label",
+      "label": "Texte du bouton",
+      "default": "Envoyer"
+    },
+    {
+      "type": "richtext",
+      "id": "success_message",
+      "label": "Message de succès",
+      "default": "<p>Merci ! Nous avons bien reçu votre message.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Mise en page"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Largeur sur ordinateur",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrondi du formulaire",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrondi des champs",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrondi du bouton",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Couleurs"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Fond",
+      "default": "#f5f1e8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Titre",
+      "default": "#5f7c8a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Texte",
+      "default": "#3e4347"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Couleur primaire",
+      "default": "#d9895b"
+    },
+    {
+      "type": "color",
+      "id": "input_background_color",
+      "label": "Fond des champs",
+      "default": "#fcfbf8"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Bordure des champs",
+      "default": "#a8bfa8"
+    },
+    {
+      "type": "color",
+      "id": "input_hover_background",
+      "label": "Fond des champs au survol",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Couleur du bouton",
+      "default": "#5f7c8a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Texte du bouton",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Bouton au survol",
+      "default": "#4e6977"
+    },
+    {
+      "type": "color",
+      "id": "success_color",
+      "label": "Couleur de succès",
+      "default": "#5f7c8a"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Couleur d'erreur",
+      "default": "#d9895b"
+    },
+    {
+      "type": "header",
+      "content": "Typographie"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Taille du titre",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Taille du texte",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "Formulaire de contact"
+    }
+  ]
+}
+{% endschema %}
